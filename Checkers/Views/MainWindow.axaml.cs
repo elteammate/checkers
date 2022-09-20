@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace Checkers.Views
+namespace Checkers.Views;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

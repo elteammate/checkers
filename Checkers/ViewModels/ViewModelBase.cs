@@ -1,8 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace Checkers.ViewModels
-{
-    public class ViewModelBase : ReactiveObject
-    {
-    }
-}
+namespace Checkers.ViewModels;
+
+public class ViewModelBase : ReactiveObject
+{ }
