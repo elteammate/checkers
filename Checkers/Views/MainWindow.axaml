@@ -7,5 +7,5 @@
         x:Class="Checkers.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Checkers">
-    <views:MainView />
+    <views:MainView/>
 </Window>
