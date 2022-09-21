@@ -18,14 +18,28 @@ namespace Checkers.Logic;
     The tile 0 is the top left corner and is occupied by the black 
     piece at the start of the game.
  */
-public record Position(int Index)
+public class Position
 {
     public int Row => 7 - Index / 4;
     public int Column => Index % 4 * 2 + 1 - Index / 4 % 2;
+    public int Index { get; init; }
+
+    public Position(int index)
+    {
+        if (index is < 0 or > 31)
+            throw new ArgumentOutOfRangeException(nameof(index));
+        Index = index;
+    }
 
     public Position(int row, int column) : this((7 - row) * 4 + column / 2)
     {
-        if (row + column % 2 != 1)
+        if (column is < 0 or > 7)
+            throw new ArgumentOutOfRangeException(nameof(column));
+
+        if (row is < 0 or > 7)
+            throw new ArgumentOutOfRangeException(nameof(row));
+
+        if ((row + column) % 2 != 0)
             throw new ArgumentException("Invalid position");
     }
 }
