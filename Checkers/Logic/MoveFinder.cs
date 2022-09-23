@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Checkers.Logic;
 
-public class MoveFetcher
+public class MoveFinder
 {
     public enum RelativePiece : sbyte
     {
@@ -17,7 +17,7 @@ public class MoveFetcher
     public readonly RelativePiece[] Board;
     private readonly Color _currentPlayer;
 
-    public MoveFetcher(Color currentPlayer, Piece[] board)
+    public MoveFinder(Color currentPlayer, Piece[] board)
     {
         _currentPlayer = currentPlayer;
 

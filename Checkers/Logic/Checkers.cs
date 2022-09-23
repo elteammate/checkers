@@ -17,7 +17,7 @@ public class Checkers
     }
 
     private Piece[] _board;
-    public MoveFetcher MoveFinder { get; private set; }
+    public MoveFinder MoveFinder { get; private set; }
     public Color CurrentPlayer { get; private set; }
     public GameResult Result { get; private set; } = GameResult.None;
 
@@ -31,7 +31,7 @@ public class Checkers
 
         CurrentPlayer = firstPlayer;
         _board = initialBoard;
-        MoveFinder = new MoveFetcher(CurrentPlayer, initialBoard);
+        MoveFinder = new MoveFinder(CurrentPlayer, initialBoard);
     }
 
     public void MakeMove(Move move)
