@@ -17,8 +17,10 @@ public class Checkers
     }
 
     private Piece[] _board;
+    public MoveFetcher MoveFinder { get; private set; }
     public Color CurrentPlayer { get; private set; }
     public GameResult Result { get; private set; } = GameResult.None;
+
     private List<Move> _movesLog = new();
     public IReadOnlyList<Move> MovesLog => _movesLog;
 
@@ -29,16 +31,7 @@ public class Checkers
 
         CurrentPlayer = firstPlayer;
         _board = initialBoard;
-    }
-
-    public List<Move> GetAllowedMoves(Position position, bool forced)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Move> GetAllowedMoves()
-    {
-        throw new NotImplementedException();
+        MoveFinder = new MoveFetcher(CurrentPlayer, initialBoard);
     }
 
     public void MakeMove(Move move)
