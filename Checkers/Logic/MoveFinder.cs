@@ -101,7 +101,7 @@ public class MoveFinder
         return moves;
     }
 
-    public List<Move> GetForceMoves() => GetMoves(true);
+    public List<Move> GetForcedMoves() => GetMoves(true);
 
     public List<Move> GetMoves()
     {
