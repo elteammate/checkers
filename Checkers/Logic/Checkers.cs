@@ -16,8 +16,6 @@ public class Checkers
         Draw
     }
 
-    public record Move(Color Player, int From, int To);
-
     private Piece[] _board;
     public Color CurrentPlayer { get; private set; }
     public GameResult Result { get; private set; } = GameResult.None;
