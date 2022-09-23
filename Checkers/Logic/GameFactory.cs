@@ -9,7 +9,7 @@ namespace Checkers.Logic;
 /// </summary>
 public static class GameFactory
 {
-    private static readonly ImmutableArray<Piece> InitialBoard = BoardFromNotation(
+    private static ImmutableArray<Piece> InitialBoard => BoardFromNotation(
         "/b/b/b/b",
         "b/b/b/b/",
         "/b/b/b/b",
@@ -47,7 +47,7 @@ public static class GameFactory
     /// </param>
     private static Piece[] BoardFromNotation(params string[] boardNotation)
     {
-        var board = InitialBoard.ToArray()!;
+        var board = new Piece[32];
 
         if (boardNotation.Length != Checkers.BoardSize)
             throw new ArgumentException($"Board must have {Checkers.BoardSize} rows",
@@ -62,7 +62,7 @@ public static class GameFactory
 
             for (var column = 0; column < Checkers.BoardSize; column++)
             {
-                if (row + column == 1)
+                if ((row + column) % 2 != 0)
                 {
                     if (line[column] != '/')
                         throw new ArgumentException($"Row {row} column {column} must be empty",

@@ -21,8 +21,8 @@ public class MoveFinder
     {
         _currentPlayer = currentPlayer;
 
-        Board = new RelativePiece[board.Length];
-        for (var index = 0; index < Checkers.BoardSize; index++)
+        Board = new RelativePiece[Checkers.PlayableTiles];
+        for (var index = 0; index < Checkers.PlayableTiles; index++)
         {
             var piece = currentPlayer switch
             {
