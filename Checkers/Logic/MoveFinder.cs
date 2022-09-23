@@ -5,7 +5,7 @@ namespace Checkers.Logic;
 
 public class MoveFetcher
 {
-    private enum RelativePiece : sbyte
+    public enum RelativePiece : sbyte
     {
         Empty = 0,
         Friendly = 1,
@@ -14,14 +14,14 @@ public class MoveFetcher
         EnemyKing = -2
     }
 
-    private readonly RelativePiece[] _board;
+    public readonly RelativePiece[] Board;
     private readonly Color _currentPlayer;
 
     public MoveFetcher(Color currentPlayer, Piece[] board)
     {
         _currentPlayer = currentPlayer;
 
-        _board = new RelativePiece[board.Length];
+        Board = new RelativePiece[board.Length];
         for (var index = 0; index < Checkers.BoardSize; index++)
         {
             var piece = currentPlayer switch
@@ -33,7 +33,7 @@ public class MoveFetcher
             };
 
             if (currentPlayer == Color.White)
-                _board[index] = piece switch
+                Board[index] = piece switch
                 {
                     Piece.Empty => RelativePiece.Empty,
                     Piece.White => RelativePiece.Friendly,
@@ -43,7 +43,7 @@ public class MoveFetcher
                     _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
                 };
             else
-                _board[index] = piece switch
+                Board[index] = piece switch
                 {
                     Piece.Empty => RelativePiece.Empty,
                     Piece.White => RelativePiece.Enemy,
@@ -81,7 +81,7 @@ public class MoveFetcher
         for (var index = 0; index < Checkers.PlayableTiles; index++)
         {
             var position = new Position(index);
-            var piece = _board[index];
+            var piece = Board[index];
 
             switch (piece)
             {
