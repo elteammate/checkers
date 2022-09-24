@@ -82,10 +82,10 @@ public class AvailableMovesTest
             "/ / / /w",
             " / / / /");
 
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(5, 2)));
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(4, 4)));
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(4, 6)));
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(3, 6)));
+        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(7, 3)));
+        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(4, 0)));
+        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(3, 5)));
+        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(1, 7)));
     }
 
     [Test]
@@ -102,15 +102,18 @@ public class AvailableMovesTest
             "/ / / /w",
             " / / / /");
 
-        var moves = game.MoveFinder.GetMovesFrom(new Position(4, 0));
+        var moves = game.MoveFinder.GetMovesFrom(new Position(4, 0))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.AreEqual(new Position(5, 1), moves[0]);
 
-        moves = game.MoveFinder.GetMovesFrom(new Position(3, 5));
+        moves = game.MoveFinder.GetMovesFrom(new Position(3, 5))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.AreEqual(new Position(4, 6), moves[0]);
 
-        moves = game.MoveFinder.GetMovesFrom(new Position(1, 7));
+        moves = game.MoveFinder.GetMovesFrom(new Position(1, 7))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.AreEqual(new Position(2, 6), moves[0]);
     }
@@ -129,12 +132,14 @@ public class AvailableMovesTest
             "/ /w/ / ",
             " / / / /");
 
-        var moves = game.MoveFinder.GetMovesFrom(new Position(4, 4));
+        var moves = game.MoveFinder.GetMovesFrom(new Position(4, 4))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(2, moves.Count);
         Assert.Contains(new Position(5, 3), moves);
         Assert.Contains(new Position(5, 5), moves);
 
-        moves = game.MoveFinder.GetMovesFrom(new Position(1, 3));
+        moves = game.MoveFinder.GetMovesFrom(new Position(1, 3))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(2, moves.Count);
         Assert.Contains(new Position(2, 2), moves);
         Assert.Contains(new Position(2, 4), moves);
@@ -145,8 +150,8 @@ public class AvailableMovesTest
     {
         var game = GameFactory.Create(
             Color.White,
-            "/ /w/b/b",
-            "b/b/ /w/",
+            "/ / /b/b",
+            "b/b/ / /",
             "/w/ /b/ ",
             " / /w/ /",
             "/ / / / ",
@@ -154,21 +159,22 @@ public class AvailableMovesTest
             "/ /w/b/ ",
             " / / /w/");
 
-        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(4, 4));
+        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(4, 4))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.Contains(new Position(6, 6), moves);
 
-        moves = game.MoveFinder.GetForcedMovesFrom(new Position(1, 3));
+        moves = game.MoveFinder.GetForcedMovesFrom(new Position(1, 3))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.Contains(new Position(3, 1), moves);
 
-        moves = game.MoveFinder.GetForcedMovesFrom(new Position(5, 1));
+        moves = game.MoveFinder.GetForcedMovesFrom(new Position(5, 1))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.Contains(new Position(7, 3), moves);
 
         Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(0, 6)));
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(6, 6)));
-        Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(7, 4)));
     }
 
     [Test]
@@ -185,18 +191,21 @@ public class AvailableMovesTest
             "/ /w/ /b",
             " /b/b/ /");
 
-        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(7, 5));
+        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(7, 5))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
         Assert.Contains(new Position(5, 7), moves);
 
-        moves = game.MoveFinder.GetForcedMovesFrom(new Position(6, 2));
+        moves = game.MoveFinder.GetForcedMovesFrom(new Position(6, 2))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(2, moves.Count);
         Assert.Contains(new Position(4, 0), moves);
         Assert.Contains(new Position(4, 4), moves);
 
-        moves = game.MoveFinder.GetForcedMovesFrom(new Position(4, 5));
+        moves = game.MoveFinder.GetForcedMovesFrom(new Position(3, 5))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(1, moves.Count);
-        Assert.Contains(new Position(6, 7), moves);
+        Assert.Contains(new Position(5, 7), moves);
 
         Assert.IsEmpty(game.MoveFinder.GetForcedMovesFrom(new Position(1, 3)));
     }
@@ -206,7 +215,7 @@ public class AvailableMovesTest
     {
         var game = GameFactory.Create(
             Color.White,
-            "/ / /b/ ",
+            "/ / / /b",
             " / / / /",
             "/w/ / / ",
             " / / / /",
@@ -215,7 +224,8 @@ public class AvailableMovesTest
             "/ / / / ",
             " / / / /");
 
-        var moves = game.MoveFinder.GetMovesFrom(new Position(3, 3));
+        var moves = game.MoveFinder.GetMovesFrom(new Position(3, 3))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(7, moves.Count);
         Assert.Contains(new Position(5, 5), moves);
         Assert.Contains(new Position(6, 6), moves);
@@ -231,7 +241,7 @@ public class AvailableMovesTest
     {
         var game = GameFactory.Create(
             Color.White,
-            "/ / /b/ ",
+            "/ / / /b",
             " / / /b/",
             "/b/ / / ",
             " / / / /",
@@ -240,7 +250,8 @@ public class AvailableMovesTest
             "/b/ / / ",
             "w/ / / /");
 
-        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(3, 3));
+        var moves = game.MoveFinder.GetForcedMovesFrom(new Position(3, 3))
+            .Select(m => m.To).ToList();
         Assert.AreEqual(2, moves.Count);
         Assert.Contains(new Position(6, 0), moves);
         Assert.Contains(new Position(1, 5), moves);
