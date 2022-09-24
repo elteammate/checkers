@@ -22,10 +22,10 @@ namespace Checkers.Logic;
 /// </summary>
 public class Position
 {
-    public int Row => Checkers.BoardSize - 1 - Index / (Checkers.BoardSize / 2);
+    public int Row => Game.BoardSize - 1 - Index / (Game.BoardSize / 2);
 
     public int Column =>
-        Index % (Checkers.BoardSize / 2) * 2 + 1 - Index / (Checkers.BoardSize / 2) % 2;
+        Index % (Game.BoardSize / 2) * 2 + 1 - Index / (Game.BoardSize / 2) % 2;
 
     public int Index { get; }
 

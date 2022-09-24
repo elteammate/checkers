@@ -33,13 +33,13 @@ public class MoveFinder
     {
         _currentPlayer = currentPlayer;
 
-        RelativeBoard = new RelativePiece[Checkers.PlayableTiles];
-        for (var index = 0; index < Checkers.PlayableTiles; index++)
+        RelativeBoard = new RelativePiece[Game.PlayableTiles];
+        for (var index = 0; index < Game.PlayableTiles; index++)
         {
             var piece = currentPlayer switch
             {
                 Color.White => board[index],
-                Color.Black => board[Checkers.PlayableTiles - 1 - index],
+                Color.Black => board[Game.PlayableTiles - 1 - index],
                 _ => throw new ArgumentOutOfRangeException(nameof(currentPlayer), currentPlayer,
                     null)
             };
@@ -70,12 +70,12 @@ public class MoveFinder
     private RelativePosition Transform(Position p) =>
         _currentPlayer == Color.White
             ? new RelativePosition(p.Index)
-            : new RelativePosition(Checkers.PlayableTiles - p.Index);
+            : new RelativePosition(Game.PlayableTiles - p.Index);
 
     private Position Transform(RelativePosition p) =>
         _currentPlayer == Color.White
             ? new Position(p.Index)
-            : new Position(Checkers.PlayableTiles - p.Index);
+            : new Position(Game.PlayableTiles - p.Index);
 
     /// <summary>
     ///  A helper method to get a move given relative start and end positions.
@@ -98,7 +98,7 @@ public class MoveFinder
     /// </summary>
     private static RelativePosition? TryGetPosition(int row, int col)
     {
-        if (row is < 0 or >= Checkers.BoardSize || col is < 0 or >= Checkers.BoardSize)
+        if (row is < 0 or >= Game.BoardSize || col is < 0 or >= Game.BoardSize)
             return null;
 
         return new RelativePosition(row, col);
@@ -279,7 +279,7 @@ public class MoveFinder
     private List<Move> GetMoves(bool forced)
     {
         var moves = new List<Move>();
-        for (var index = 0; index < Checkers.PlayableTiles; index++)
+        for (var index = 0; index < Game.PlayableTiles; index++)
         {
             var position = new Position(index);
             var piece = RelativeBoard[index];

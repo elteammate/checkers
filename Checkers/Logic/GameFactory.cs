@@ -5,7 +5,7 @@ using System.Linq;
 namespace Checkers.Logic;
 
 /// <summary>
-/// A helper class for creation of <see cref="Checkers"/> class instances.
+/// A helper class for creation of <see cref="Game"/> class instances.
 /// </summary>
 public static class GameFactory
 {
@@ -23,7 +23,7 @@ public static class GameFactory
     /// <summary>
     ///   Creates a new board with the initial setup.
     /// </summary>
-    public static Checkers Create() => new(InitialBoard.ToArray(), Color.White);
+    public static Game Create() => new(InitialBoard.ToArray(), Color.White);
 
     /// <summary>
     /// Create a new board with the given setup.
@@ -32,7 +32,7 @@ public static class GameFactory
     /// <param name="boardNotation">
     /// Strings with checkers board notation <see cref="BoardFromNotation"/>
     /// </param>
-    public static Checkers Create(Color player, params string[] boardNotation) =>
+    public static Game Create(Color player, params string[] boardNotation) =>
         new(BoardFromNotation(boardNotation), player);
 
     /// <summary>
@@ -49,18 +49,18 @@ public static class GameFactory
     {
         var board = new Piece[32];
 
-        if (boardNotation.Length != Checkers.BoardSize)
-            throw new ArgumentException($"Board must have {Checkers.BoardSize} rows",
+        if (boardNotation.Length != Game.BoardSize)
+            throw new ArgumentException($"Board must have {Game.BoardSize} rows",
                 nameof(boardNotation));
 
-        for (var row = 0; row < Checkers.BoardSize; row++)
+        for (var row = 0; row < Game.BoardSize; row++)
         {
-            var line = boardNotation[Checkers.BoardSize - 1 - row];
-            if (line.Length != Checkers.BoardSize)
-                throw new ArgumentException($"Row {row} must have {Checkers.BoardSize} columns",
+            var line = boardNotation[Game.BoardSize - 1 - row];
+            if (line.Length != Game.BoardSize)
+                throw new ArgumentException($"Row {row} must have {Game.BoardSize} columns",
                     nameof(boardNotation));
 
-            for (var column = 0; column < Checkers.BoardSize; column++)
+            for (var column = 0; column < Game.BoardSize; column++)
             {
                 if ((row + column) % 2 != 0)
                 {

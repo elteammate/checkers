@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Checkers.Logic;
 
-public class Checkers
+public class Game
 {
     public const int BoardSize = 8;
     public const int PlayableTiles = BoardSize * BoardSize / 2;
@@ -24,7 +24,7 @@ public class Checkers
     private List<Move> _movesLog = new();
     public IReadOnlyList<Move> MovesLog => _movesLog;
 
-    public Checkers(Piece[] initialBoard, Color firstPlayer)
+    public Game(Piece[] initialBoard, Color firstPlayer)
     {
         if (initialBoard.Length != PlayableTiles)
             throw new ArgumentException("Board must have 32 tiles", nameof(initialBoard));
