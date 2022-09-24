@@ -47,4 +47,33 @@ public class Position
         if ((row + column) % 2 != 0)
             throw new ArgumentException("Invalid position");
     }
+
+    public static bool operator ==(Position left, Position right) => left.Index == right.Index;
+    public static bool operator !=(Position left, Position right) => left.Index != right.Index;
+
+    public override bool Equals(object obj) => obj is Position position && Index == position.Index;
+    public override int GetHashCode() => Index;
+
+    public override string ToString() => $"({Row}, {Column})";
+}
+
+public class RelativePosition
+{
+    private readonly Position _position;
+
+    public RelativePosition(int index)
+    {
+        _position = new Position(index);
+    }
+
+    public RelativePosition(int row, int column)
+    {
+        _position = new Position(row, column);
+    }
+
+    public int Index => _position.Index;
+    public int Row => _position.Row;
+    public int Column => _position.Column;
+
+    public override string ToString() => $"({Row}, {Column})";
 }
