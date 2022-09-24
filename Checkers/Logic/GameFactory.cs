@@ -47,20 +47,20 @@ public static class GameFactory
     /// </param>
     private static Piece[] BoardFromNotation(params string[] boardNotation)
     {
-        var board = new Piece[32];
+        var board = new Piece[Game.PlayableTiles];
 
-        if (boardNotation.Length != Game.BoardSize)
-            throw new ArgumentException($"Board must have {Game.BoardSize} rows",
+        if (boardNotation.Length != Game.BoardHeight)
+            throw new ArgumentException($"Board must have {Game.BoardHeight} rows",
                 nameof(boardNotation));
 
-        for (var row = 0; row < Game.BoardSize; row++)
+        for (var row = 0; row < Game.BoardHeight; row++)
         {
-            var line = boardNotation[Game.BoardSize - 1 - row];
-            if (line.Length != Game.BoardSize)
-                throw new ArgumentException($"Row {row} must have {Game.BoardSize} columns",
+            var line = boardNotation[Game.BoardHeight - 1 - row];
+            if (line.Length != Game.BoardWidth)
+                throw new ArgumentException($"Row {row} must have {Game.BoardWidth} columns",
                     nameof(boardNotation));
 
-            for (var column = 0; column < Game.BoardSize; column++)
+            for (var column = 0; column < Game.BoardWidth; column++)
             {
                 if ((row + column) % 2 != 0)
                 {

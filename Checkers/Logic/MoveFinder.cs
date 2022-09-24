@@ -98,7 +98,7 @@ public class MoveFinder
     /// </summary>
     private static RelativePosition? TryGetPosition(int row, int col)
     {
-        if (row is < 0 or >= Game.BoardSize || col is < 0 or >= Game.BoardSize)
+        if (row is < 0 or >= Game.BoardHeight || col is < 0 or >= Game.BoardWidth)
             return null;
 
         return new RelativePosition(row, col);

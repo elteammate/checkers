@@ -5,8 +5,9 @@ namespace Checkers.Logic;
 
 public class Game
 {
-    public const int BoardSize = 8;
-    public const int PlayableTiles = BoardSize * BoardSize / 2;
+    public const int BoardHeight = 8;
+    public const int BoardWidth = 8;
+    public const int PlayableTiles = BoardHeight * BoardWidth / 2;
 
     public enum GameResult
     {
