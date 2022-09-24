@@ -57,6 +57,14 @@ public class Position
     public override string ToString() => $"({Row}, {Column})";
 }
 
+/// <summary>
+/// This class is used by <see cref="MoveFinder"/> to
+/// represent a position on the oriented board.
+///
+/// The position with index 0 is the top left corner of the board if
+/// current player is white and the bottom right corner if current player
+/// is black.
+/// </summary>
 public class RelativePosition
 {
     private readonly Position _position;
