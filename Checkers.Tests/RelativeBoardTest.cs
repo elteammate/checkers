@@ -8,7 +8,7 @@ public class RelativeBoardTest
     [Test]
     public void MoveFinderBoard_WhenInitialized_ShouldHaveCorrectNumberOfPieces()
     {
-        var board = GameFactory.Create().MoveFinder.Board;
+        var board = GameFactory.Create().MoveFinder.RelativeBoard;
         var friendly = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Friendly).Length;
         var enemy = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Enemy).Length;
         var empty = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Empty).Length;
@@ -28,7 +28,7 @@ public class RelativeBoardTest
             "/B/w/ / ",
             "B/ /W/ /",
             "/ /b/b/ ",
-            " /w/ / /").MoveFinder.Board;
+            " /w/ / /").MoveFinder.RelativeBoard;
 
         Assert.AreEqual(new[]
         {
@@ -62,7 +62,7 @@ public class RelativeBoardTest
             "/B/w/ / ",
             "B/ /W/ /",
             "/ /b/b/ ",
-            " /w/ / /").MoveFinder.Board;
+            " /w/ / /").MoveFinder.RelativeBoard;
 
         Assert.AreEqual(new[]
         {

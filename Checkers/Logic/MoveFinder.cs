@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 namespace Checkers.Logic;
 
+/// <summary>
+/// This class is used to find available moves for a given board state.
+///
+/// It uses the concept of board 'relativity'.
+/// If we transpose the board and replace all black pieces with white pieces,
+/// and vice versa, we can use the same algorithm to find the available moves
+/// for both players.
+/// </summary>
 public class MoveFinder
 {
     public enum RelativePiece : sbyte
@@ -14,14 +22,18 @@ public class MoveFinder
         EnemyKing = -2
     }
 
-    public readonly RelativePiece[] Board;
+    /// <summary>
+    /// Stores the relative board state.
+    /// </summary>
+    public readonly RelativePiece[] RelativeBoard;
+
     private readonly Color _currentPlayer;
 
     public MoveFinder(Color currentPlayer, Piece[] board)
     {
         _currentPlayer = currentPlayer;
 
-        Board = new RelativePiece[Checkers.PlayableTiles];
+        RelativeBoard = new RelativePiece[Checkers.PlayableTiles];
         for (var index = 0; index < Checkers.PlayableTiles; index++)
         {
             var piece = currentPlayer switch
@@ -33,7 +45,7 @@ public class MoveFinder
             };
 
             if (currentPlayer == Color.White)
-                Board[index] = piece switch
+                RelativeBoard[index] = piece switch
                 {
                     Piece.Empty => RelativePiece.Empty,
                     Piece.White => RelativePiece.Friendly,
@@ -43,7 +55,7 @@ public class MoveFinder
                     _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
                 };
             else
-                Board[index] = piece switch
+                RelativeBoard[index] = piece switch
                 {
                     Piece.Empty => RelativePiece.Empty,
                     Piece.White => RelativePiece.Enemy,
@@ -55,28 +67,35 @@ public class MoveFinder
         }
     }
 
-    private RelativePosition Transform(Position p)
-    {
-        return _currentPlayer == Color.White
+    private RelativePosition Transform(Position p) =>
+        _currentPlayer == Color.White
             ? new RelativePosition(p.Index)
             : new RelativePosition(Checkers.PlayableTiles - p.Index);
-    }
 
-    private Position Transform(RelativePosition p)
-    {
-        return _currentPlayer == Color.White
+    private Position Transform(RelativePosition p) =>
+        _currentPlayer == Color.White
             ? new Position(p.Index)
             : new Position(Checkers.PlayableTiles - p.Index);
-    }
 
-    private Move GetMove(RelativePosition From, RelativePosition To, RelativePosition? Jumped)
+    /// <summary>
+    ///  A helper method to get a move given relative start and end positions.
+    /// </summary>
+    private Move GetMove(
+        RelativePosition relFrom,
+        RelativePosition relTo,
+        RelativePosition? relJumped
+    )
     {
-        var from = Transform(From);
-        var to = Transform(To);
-        var jumped = Jumped == null ? null : Transform(Jumped);
+        var from = Transform(relFrom);
+        var to = Transform(relTo);
+        var jumped = relJumped == null ? null : Transform(relJumped);
         return new Move(_currentPlayer, from, to, jumped);
     }
 
+    /// <summary>
+    /// Returns a position if it is on the board, otherwise null.
+    /// It does not check if the position is correct
+    /// </summary>
     private static RelativePosition? TryGetPosition(int row, int col)
     {
         if (row is < 0 or >= Checkers.BoardSize || col is < 0 or >= Checkers.BoardSize)
@@ -86,17 +105,21 @@ public class MoveFinder
     }
 
     private bool IsEmpty(RelativePosition? position) =>
-        position != null && Board[position.Index] == RelativePiece.Empty;
+        position != null && RelativeBoard[position.Index] == RelativePiece.Empty;
 
     private bool IsFriend(RelativePosition? position) =>
         position != null &&
-        Board[position.Index] is RelativePiece.Friendly or RelativePiece.FriendlyKing;
+        RelativeBoard[position.Index] is RelativePiece.Friendly or RelativePiece.FriendlyKing;
 
     private bool IsEnemy(RelativePosition? position) =>
         position != null &&
-        Board[position.Index] is RelativePiece.Enemy or RelativePiece.EnemyKing;
+        RelativeBoard[position.Index] is RelativePiece.Enemy or RelativePiece.EnemyKing;
 
-    private List<Move> GetMovesFromNormalPiece(RelativePosition pos)
+    /// <summary>
+    /// Returns a list of available non-forced moves for a given piece.
+    /// It assumes that the piece in the given position is not a king and friendly.
+    /// </summary>
+    private List<Move> GetNormalMovesOfPiece(RelativePosition pos)
     {
         var optionLeft = TryGetPosition(pos.Row + 1, pos.Column - 1);
         var optionRight = TryGetPosition(pos.Row + 1, pos.Column + 1);
@@ -109,35 +132,43 @@ public class MoveFinder
         return result;
     }
 
-    private List<Move> GetForcedMovesFromNormalPiece(RelativePosition relativePosition)
+    /// <summary>
+    /// Returns a list of available forced moves for a given piece.
+    /// It assumes that the piece in the given position is not a king and friendly.
+    /// </summary>
+    private List<Move> GetForcedMovesOfPiece(RelativePosition pos)
     {
         var result = new List<Move>();
 
-        var optionLeft = TryGetPosition(relativePosition.Row + 2, relativePosition.Column - 2);
-        var jumpedLeft = TryGetPosition(relativePosition.Row + 1, relativePosition.Column - 1);
+        var optionLeft = TryGetPosition(pos.Row + 2, pos.Column - 2);
+        var jumpedLeft = TryGetPosition(pos.Row + 1, pos.Column - 1);
         if (IsEmpty(optionLeft) && IsEnemy(jumpedLeft))
-            result.Add(GetMove(relativePosition, optionLeft!, jumpedLeft));
+            result.Add(GetMove(pos, optionLeft!, jumpedLeft));
 
-        var optionRight = TryGetPosition(relativePosition.Row + 2, relativePosition.Column + 2);
-        var jumpedRight = TryGetPosition(relativePosition.Row + 1, relativePosition.Column + 1);
+        var optionRight = TryGetPosition(pos.Row + 2, pos.Column + 2);
+        var jumpedRight = TryGetPosition(pos.Row + 1, pos.Column + 1);
         if (IsEmpty(optionRight) && IsEnemy(jumpedRight))
-            result.Add(GetMove(relativePosition, optionRight!, jumpedRight));
+            result.Add(GetMove(pos, optionRight!, jumpedRight));
 
-        var optionBackLeft = TryGetPosition(relativePosition.Row - 2, relativePosition.Column - 2);
-        var jumpedBackLeft = TryGetPosition(relativePosition.Row - 1, relativePosition.Column - 1);
+        var optionBackLeft = TryGetPosition(pos.Row - 2, pos.Column - 2);
+        var jumpedBackLeft = TryGetPosition(pos.Row - 1, pos.Column - 1);
         if (IsEmpty(optionBackLeft) && IsEnemy(jumpedBackLeft))
-            result.Add(GetMove(relativePosition, optionBackLeft!, jumpedBackLeft));
+            result.Add(GetMove(pos, optionBackLeft!, jumpedBackLeft));
 
-        var optionBackRight = TryGetPosition(relativePosition.Row - 2, relativePosition.Column + 2);
-        var jumpedBackRight = TryGetPosition(relativePosition.Row - 1, relativePosition.Column + 1);
+        var optionBackRight = TryGetPosition(pos.Row - 2, pos.Column + 2);
+        var jumpedBackRight = TryGetPosition(pos.Row - 1, pos.Column + 1);
         if (IsEmpty(optionBackRight) && IsEnemy(jumpedBackRight))
-            result.Add(GetMove(relativePosition, optionBackRight!, jumpedBackRight));
+            result.Add(GetMove(pos, optionBackRight!, jumpedBackRight));
 
 
         return result;
     }
 
-    private List<Move> GetMovesFromKingPiece(RelativePosition relativePosition)
+    /// <summary>
+    /// Returns a list of available non-forced moves for a given piece.
+    /// It assumes that the piece in the given position is a king and friendly.
+    /// </summary>
+    private List<Move> GetNormalMovesOfKing(RelativePosition relativePosition)
     {
         var result = new List<Move>();
 
@@ -167,7 +198,11 @@ public class MoveFinder
         return result;
     }
 
-    private List<Move> GetForcedMovesFromKingPiece(RelativePosition relativePosition)
+    /// <summary>
+    /// Returns a list of available forced moves for a given piece.
+    /// It assumes that the piece in the given position is a king and friendly.
+    /// </summary>
+    private List<Move> GetForcedMovesOfKing(RelativePosition relativePosition)
     {
         var result = new List<Move>();
 
@@ -199,41 +234,55 @@ public class MoveFinder
         return result;
     }
 
+    /// <summary>
+    /// Given a position, returns a list of available non-forced moves from it.
+    /// Works for both kings and normal pieces.
+    /// If the piece in given position is not friendly, throws ArgumentException.
+    /// </summary>
     public List<Move> GetMovesFrom(Position absolutePosition)
     {
         var position = Transform(absolutePosition);
         if (!IsFriend(position))
             throw new ArgumentException("Piece must be friendly", nameof(absolutePosition));
 
-        return Board[position.Index] switch
+        return RelativeBoard[position.Index] switch
         {
-            RelativePiece.Friendly => GetMovesFromNormalPiece(position),
-            RelativePiece.FriendlyKing => GetMovesFromKingPiece(position),
+            RelativePiece.Friendly => GetNormalMovesOfPiece(position),
+            RelativePiece.FriendlyKing => GetNormalMovesOfKing(position),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
+    /// <summary>
+    /// Given a position, returns a list of available forced moves from it.
+    /// Works for both kings and normal pieces.
+    /// If the piece in given position is not friendly, throws ArgumentException.
+    /// </summary>
     public List<Move> GetForcedMovesFrom(Position position)
     {
         var pos = Transform(position);
         if (!IsFriend(pos))
             throw new ArgumentException("Piece must be friendly", nameof(position));
 
-        return Board[pos.Index] switch
+        return RelativeBoard[pos.Index] switch
         {
-            RelativePiece.Friendly => GetForcedMovesFromNormalPiece(pos),
-            RelativePiece.FriendlyKing => GetForcedMovesFromKingPiece(pos),
+            RelativePiece.Friendly => GetForcedMovesOfPiece(pos),
+            RelativePiece.FriendlyKing => GetForcedMovesOfKing(pos),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
+    /// <summary>
+    /// Returns a list of all available moves.
+    /// </summary>
+    /// <param name="forced">Whether method should find non-forced or forced moves only</param>
     private List<Move> GetMoves(bool forced)
     {
         var moves = new List<Move>();
         for (var index = 0; index < Checkers.PlayableTiles; index++)
         {
             var position = new Position(index);
-            var piece = Board[index];
+            var piece = RelativeBoard[index];
 
             switch (piece)
             {
@@ -253,8 +302,15 @@ public class MoveFinder
         return moves;
     }
 
+    /// <summary>
+    /// Returns all available forced moves.
+    /// </summary>
     public List<Move> GetForcedMoves() => GetMoves(true);
 
+    /// <summary>
+    /// Returns all available moves, both forced and non-forced.
+    /// It also checks if there are any forced moves available.
+    /// </summary>
     public List<Move> GetMoves()
     {
         var forced = GetMoves(true);
