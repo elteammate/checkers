@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Checkers.Logic;
 using Checkers.ViewModels;
+using Color = Avalonia.Media.Color;
 
 namespace Checkers.Views;
 
@@ -17,6 +18,12 @@ public partial class BoardView : UserControl
     private Dictionary<Position, PieceSprite> _pieceSprites = new();
     private readonly Grid _boardGrid;
     private readonly Canvas _boardCanvas;
+
+    private static readonly Brush
+        WhiteTileBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+
+    private static readonly Brush
+        BlackTileBrush = new SolidColorBrush(Color.FromRgb(81, 191, 250));
 
     public BoardView()
     {
@@ -59,16 +66,26 @@ public partial class BoardView : UserControl
                     Width = _cellSize,
                     Height = _cellSize,
                     Fill = (row + column) % 2 == 1
-                        ? new SolidColorBrush(Colors.Black)
-                        : new SolidColorBrush(Colors.White),
+                        ? BlackTileBrush
+                        : WhiteTileBrush,
                 };
 
                 cell.SetValue(Grid.ColumnProperty, column);
                 cell.SetValue(Grid.RowProperty, row);
+                cell.Opacity = 0.5;
 
                 _boardGrid.Children.Add(cell);
             }
         }
+
+        var backgroundImage = new Image
+        {
+            Source = AssetManager.BoardBg.Value,
+            Width = _boardCanvas.Width,
+            Height = _boardCanvas.Height,
+            ZIndex = -1,
+        };
+        _boardCanvas.Children.Add(backgroundImage);
     }
 
     private void InitializePieces()
