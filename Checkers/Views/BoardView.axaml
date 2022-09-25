@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Checkers.Views.BoardView">
-    <Canvas Name="BoardCanvas">
-        <Rectangle Fill="Red" Height="44" Width="44"/>
-        <Rectangle Fill="Blue" Height="44" Width="44" Canvas.Left="20" Canvas.Top="20"/>
-        <Rectangle Fill="Green" Height="44" Width="44" Canvas.Left="40" Canvas.Top="40"/>
-        <Rectangle Fill="Orange" Height="44" Width="44" Canvas.Left="60" Canvas.Top="60"/>
-    </Canvas>
+
+    <Viewbox Stretch="Uniform">
+        <Canvas Width="800" Height="800" Name="BoardCanvas">
+            <Grid Width="800" Height="800" Name="BoardGrid">
+            </Grid>
+        </Canvas>
+    </Viewbox>
 </UserControl>

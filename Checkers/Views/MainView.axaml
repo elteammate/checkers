@@ -6,8 +6,7 @@
              xmlns:views="clr-namespace:Checkers.Views"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="Checkers.Views.MainView"
-             Foreground="White"
-             Background="#171C2C">
+             Foreground="White">
     <Design.DataContext>
         <viewModels:MainViewModel/>
     </Design.DataContext>

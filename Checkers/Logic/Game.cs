@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Checkers.Logic;
 
@@ -18,6 +19,7 @@ public class Game
     }
 
     private Piece[] _board;
+    public ImmutableArray<Piece> Board => _board.ToImmutableArray();
     public MoveFinder MoveFinder { get; private set; }
     public Color CurrentPlayer { get; private set; }
     public GameResult Result { get; private set; } = GameResult.None;
