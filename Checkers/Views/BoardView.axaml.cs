@@ -61,18 +61,17 @@ public partial class BoardView : UserControl
         {
             for (var column = 0; column < Game.BoardWidth; column++)
             {
-                var cell = new Rectangle
+                var cell = new BoardTile
                 {
                     Width = _cellSize,
                     Height = _cellSize,
-                    Fill = (row + column) % 2 == 1
-                        ? BlackTileBrush
-                        : WhiteTileBrush,
+                    Color = (row + column) % 2 == 1
+                        ? Checkers.Logic.Color.Black
+                        : Checkers.Logic.Color.White,
                 };
 
                 cell.SetValue(Grid.ColumnProperty, column);
                 cell.SetValue(Grid.RowProperty, row);
-                cell.Opacity = 0.5;
 
                 _boardGrid.Children.Add(cell);
             }

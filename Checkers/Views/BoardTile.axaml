@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="Checkers.Views.BoardTile">
+    <UserControl.Styles>
+        <Style Selector="Rectangle">
+            <Setter Property="Opacity" Value="0.25"/>
+        </Style>
+        <Style Selector="Rectangle:pointerover">
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.15"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.45"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.15"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <Rectangle Width="100" Height="100" Name="Tile">
+    </Rectangle>
+</UserControl>
