@@ -4,8 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
              x:Class="Checkers.Views.PieceSprite">
-    <Image
-        Name="Sprite"
-        Width="100"
-        Height="100"/>
+    <Grid Width="100" Height="100">
+        <Image
+            Name="Sprite"
+            Width="80"
+            Height="80"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"/>
+    </Grid>
 </UserControl>
