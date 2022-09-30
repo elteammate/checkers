@@ -48,8 +48,8 @@ public class Position
             throw new ArgumentException("Invalid position");
     }
 
-    public static bool operator ==(Position left, Position right) => left.Index == right.Index;
-    public static bool operator !=(Position left, Position right) => left.Index != right.Index;
+    public static bool operator ==(Position? left, Position? right) => left?.Index == right?.Index;
+    public static bool operator !=(Position? left, Position? right) => left?.Index != right?.Index;
 
     public override bool Equals(object obj) => obj is Position position && Index == position.Index;
     public override int GetHashCode() => Index;
