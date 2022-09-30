@@ -17,11 +17,7 @@ public partial class TileControl : UserControl
         AvaloniaXamlLoader.Load(this);
         var overlay = this.FindControl<Rectangle>("TileOverlay")!;
 
-        PointerEntered += (_, _) =>
-        {
-            overlay.Classes.Add(HoveredClass);
-            Console.WriteLine("aba");
-        };
+        PointerEntered += (_, _) => overlay.Classes.Add(HoveredClass);
         PointerExited += (_, _) => overlay.Classes.Remove(HoveredClass);
     }
 }
