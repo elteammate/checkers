@@ -25,6 +25,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Rectangle Width="100" Height="100" Name="Tile">
-    </Rectangle>
+    <Canvas>
+        <Rectangle Width="100" Height="100" Name="Tile"/>
+    </Canvas>
 </UserControl>

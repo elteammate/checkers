@@ -2,12 +2,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Checkers.Logic;
 using Checkers.ViewModels;
-using Color = Avalonia.Media.Color;
 
 namespace Checkers.Views;
 
@@ -18,12 +15,8 @@ public partial class BoardView : UserControl
     private Dictionary<Position, PieceSprite> _pieceSprites = new();
     private readonly Grid _boardGrid;
     private readonly Canvas _boardCanvas;
-
-    private static readonly Brush
-        WhiteTileBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-
-    private static readonly Brush
-        BlackTileBrush = new SolidColorBrush(Color.FromRgb(81, 191, 250));
+    private readonly Grid _boardOverlayGrid;
+    private readonly Image _boardBackground;
 
     public BoardView()
     {
@@ -34,6 +27,8 @@ public partial class BoardView : UserControl
 
         _boardGrid = this.FindControl<Grid>("BoardGrid")!;
         _boardCanvas = this.FindControl<Canvas>("BoardCanvas")!;
+        _boardOverlayGrid = this.FindControl<Grid>("BoardOverlayGrid")!;
+        _boardBackground = this.FindControl<Image>("BoardBackground")!;
 
         _cellSize = _boardGrid.Width / Game.BoardWidth;
 
@@ -43,48 +38,56 @@ public partial class BoardView : UserControl
 
     private void InitializeBoard()
     {
-        _boardGrid.ColumnDefinitions = ColumnDefinitions.Parse(
-            new StringBuilder()
-                .Insert(0, "auto,", Game.BoardWidth)
-                .Remove(5 * Game.BoardWidth - 1, 1)
-                .ToString()
-        );
+        var gridColumns = new StringBuilder()
+            .Insert(0, "auto,", Game.BoardWidth)
+            .Remove(Game.BoardWidth * 5 - 1, 1)
+            .ToString();
 
-        _boardGrid.RowDefinitions = RowDefinitions.Parse(
-            new StringBuilder()
-                .Insert(0, "auto,", Game.BoardHeight)
-                .Remove(5 * Game.BoardWidth - 1, 1)
-                .ToString()
-        );
+        var gridRows = new StringBuilder()
+            .Insert(0, "auto,", Game.BoardHeight)
+            .Remove(Game.BoardHeight * 5 - 1, 1)
+            .ToString();
+
+        _boardGrid.ColumnDefinitions = ColumnDefinitions.Parse(gridColumns);
+        _boardGrid.RowDefinitions = RowDefinitions.Parse(gridRows);
+        _boardOverlayGrid.ColumnDefinitions = ColumnDefinitions.Parse(gridColumns);
+        _boardOverlayGrid.RowDefinitions = RowDefinitions.Parse(gridRows);
 
         for (var row = 0; row < Game.BoardHeight; row++)
         {
             for (var column = 0; column < Game.BoardWidth; column++)
             {
-                var cell = new BoardTile
+                var color = (row + column) % 2 == 0 ? Color.White : Color.Black;
+
+                var tile = new BoardTile
                 {
                     Width = _cellSize,
                     Height = _cellSize,
-                    Color = (row + column) % 2 == 1
-                        ? Checkers.Logic.Color.Black
-                        : Checkers.Logic.Color.White,
+                    Color = color,
                 };
 
-                cell.SetValue(Grid.ColumnProperty, column);
-                cell.SetValue(Grid.RowProperty, row);
+                tile.SetValue(Grid.ColumnProperty, column);
+                tile.SetValue(Grid.RowProperty, row);
 
-                _boardGrid.Children.Add(cell);
+                if (color == Color.Black)
+                {
+                    TileControl tileControl = new()
+                    {
+                        Width = _cellSize,
+                        Height = _cellSize,
+                        Tile = tile,
+                    };
+
+                    tileControl.SetValue(Grid.ColumnProperty, column);
+                    tileControl.SetValue(Grid.RowProperty, row);
+                    _boardOverlayGrid.Children.Add(tileControl);
+                }
+
+                _boardGrid.Children.Add(tile);
             }
         }
 
-        var backgroundImage = new Image
-        {
-            Source = AssetManager.BoardBg.Value,
-            Width = _boardCanvas.Width,
-            Height = _boardCanvas.Height,
-            ZIndex = -1,
-        };
-        _boardCanvas.Children.Add(backgroundImage);
+        _boardBackground.Source = AssetManager.BoardBg.Value;
     }
 
     private void InitializePieces()

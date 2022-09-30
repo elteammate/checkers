@@ -6,9 +6,11 @@
              x:Class="Checkers.Views.BoardView">
 
     <Viewbox Stretch="Uniform">
-        <Canvas Width="800" Height="800" Name="BoardCanvas">
-            <Grid Width="800" Height="800" Name="BoardGrid">
-            </Grid>
+        <Canvas Width="800" Height="800">
+            <Image Width="800" Height="800" Name="BoardBackground"/>
+            <Grid Width="800" Height="800" Name="BoardGrid"></Grid>
+            <Canvas Width="800" Height="800" Name="BoardCanvas"></Canvas>
+            <Grid Width="800" Height="800" Name="BoardOverlayGrid"></Grid>
         </Canvas>
     </Viewbox>
 </UserControl>
