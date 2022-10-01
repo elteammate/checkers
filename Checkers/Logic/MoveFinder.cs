@@ -67,15 +67,9 @@ public class MoveFinder
         }
     }
 
-    private RelativePosition Transform(Position p) =>
-        _currentPlayer == Color.White
-            ? new RelativePosition(p.Index)
-            : new RelativePosition(Game.PlayableTiles - p.Index);
+    private RelativePosition Transform(Position p) => p.ToRelative(_currentPlayer);
 
-    private Position Transform(RelativePosition p) =>
-        _currentPlayer == Color.White
-            ? new Position(p.Index)
-            : new Position(Game.PlayableTiles - p.Index);
+    private Position Transform(RelativePosition p) => p.ToAbsolute(_currentPlayer);
 
     /// <summary>
     ///  A helper method to get a move given relative start and end positions.
@@ -281,8 +275,9 @@ public class MoveFinder
         var moves = new List<Move>();
         for (var index = 0; index < Game.PlayableTiles; index++)
         {
-            var position = new Position(index);
-            var piece = RelativeBoard[index];
+            var relativePosition = new RelativePosition(_currentPlayer, index);
+            var absolutePosition = new Position(index);
+            var piece = RelativeBoard[relativePosition.Index];
 
             switch (piece)
             {
@@ -292,7 +287,9 @@ public class MoveFinder
                     continue;
                 case RelativePiece.Friendly:
                 case RelativePiece.FriendlyKing:
-                    moves.AddRange(forced ? GetMovesFrom(position) : GetForcedMovesFrom(position));
+                    moves.AddRange(forced
+                        ? GetForcedMovesFrom(absolutePosition)
+                        : GetMovesFrom(absolutePosition));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
