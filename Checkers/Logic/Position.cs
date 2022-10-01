@@ -48,6 +48,8 @@ public class Position
             throw new ArgumentException("Invalid position");
     }
 
+    public RelativePosition ToRelative(Color player) => new RelativePosition(player, Index);
+
     public static bool operator ==(Position? left, Position? right) => left?.Index == right?.Index;
     public static bool operator !=(Position? left, Position? right) => left?.Index != right?.Index;
 
@@ -74,10 +76,28 @@ public class RelativePosition
         _position = new Position(index);
     }
 
+    public RelativePosition(Color player, int index)
+    {
+        _position = new Position(player == Color.White ? index : Game.PlayableTiles - 1 - index);
+    }
+
     public RelativePosition(int row, int column)
     {
         _position = new Position(row, column);
     }
+
+    public RelativePosition(Color player, int row, int column)
+    {
+        if (player == Color.Black)
+            _position = new Position(Game.BoardHeight - 1 - row, Game.BoardWidth - 1 - column);
+        else
+            _position = new Position(row, column);
+    }
+
+    public Position ToAbsolute(Color color) =>
+        new Position(color == Color.White
+            ? _position.Index
+            : Game.PlayableTiles - 1 - _position.Index);
 
     public int Index => _position.Index;
     public int Row => _position.Row;
