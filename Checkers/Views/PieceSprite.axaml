@@ -4,6 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
              x:Class="Checkers.Views.PieceSprite">
+    <UserControl.Transitions>
+        <Transitions>
+            <DoubleTransition Easing="CubicEaseInOut" Property="Canvas.Bottom" Duration="0:0:0.2"/>
+            <DoubleTransition Easing="CubicEaseInOut" Property="Canvas.Top" Duration="0:0:0.2"/>
+            <DoubleTransition Easing="CubicEaseInOut" Property="Canvas.Left" Duration="0:0:0.2"/>
+            <DoubleTransition Easing="CubicEaseInOut" Property="Canvas.Right" Duration="0:0:0.2"/>
+        </Transitions>
+    </UserControl.Transitions>
     <Grid Width="100" Height="100">
         <Image
             Name="Sprite"

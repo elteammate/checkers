@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -18,6 +19,8 @@ public partial class BoardView : UserControl
     private readonly Grid _boardOverlayGrid;
     private readonly Image _boardBackground;
 
+    private Position? _selectedPosition;
+
     public BoardView()
     {
         _viewModel = new BoardViewModel();
@@ -31,6 +34,8 @@ public partial class BoardView : UserControl
         _boardBackground = this.FindControl<Image>("BoardBackground")!;
 
         _cellSize = _boardGrid.Width / Game.BoardWidth;
+
+        _viewModel.PieceMoved += (_, move) => MovePieceSprites(move);
 
         InitializeBoard();
         InitializePieces();
@@ -76,6 +81,8 @@ public partial class BoardView : UserControl
                         Width = _cellSize,
                         Height = _cellSize,
                         Tile = tile,
+                        Position = new Position(7 - row, column),
+                        Board = this,
                     };
 
                     tileControl.SetValue(Grid.ColumnProperty, column);
@@ -92,7 +99,6 @@ public partial class BoardView : UserControl
 
     private void InitializePieces()
     {
-        _viewModel.Pieces.CollectionChanged += UpdatePieces;
         foreach (var pieceOnBoard in _viewModel.Pieces)
         {
             var pieceSprite = new PieceSprite();
@@ -111,6 +117,50 @@ public partial class BoardView : UserControl
         }
     }
 
-    private void UpdatePieces(object sender, NotifyCollectionChangedEventArgs e)
-    { }
+    private void MovePieceSprites(Move move)
+    {
+        if (_pieceSprites.TryGetValue(move.From, out var pieceSprite))
+        {
+            _pieceSprites.Remove(move.From);
+            _pieceSprites.Add(move.To, pieceSprite);
+
+            var x = move.To.Column * _cellSize;
+            var y = move.To.Row * _cellSize;
+
+            pieceSprite.SetValue(Canvas.LeftProperty, x);
+            pieceSprite.SetValue(Canvas.BottomProperty, y);
+        }
+
+        if (move.Jumped != null &&
+            _pieceSprites.TryGetValue(move.Jumped!, out var jumpedPieceSprite))
+        {
+            _pieceSprites.Remove(move.Jumped!);
+            _boardCanvas.Children.Remove(jumpedPieceSprite);
+        }
+
+        _selectedPosition = null;
+    }
+
+    private void SelectPiece(Position pos)
+    {
+        _selectedPosition = pos;
+    }
+
+    public void OnTilePressed(TileControl tile)
+    {
+        var pos = tile.Position!;
+        if (_viewModel.Game.CurrentPlayer == _viewModel.Game.Board[pos.Index].GetColor())
+        {
+            SelectPiece(pos);
+        }
+        else
+        {
+            var move = _viewModel.Moves.Find(
+                move => move.From == _selectedPosition && move.To == pos);
+            if (move != null)
+            {
+                _viewModel.Move(move);
+            }
+        }
+    }
 }

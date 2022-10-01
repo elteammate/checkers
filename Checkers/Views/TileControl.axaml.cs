@@ -1,16 +1,18 @@
-using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
+using Checkers.Logic;
 
 namespace Checkers.Views;
 
 public partial class TileControl : UserControl
 {
     private const string HoveredClass = "Hovered";
+
+    public Position? Position { get; set; }
     public BoardTile? Tile { get; set; }
     public PieceSprite? PieceSprite { get; set; }
+    public BoardView? Board { get; set; }
 
     public TileControl()
     {
@@ -19,5 +21,6 @@ public partial class TileControl : UserControl
 
         PointerEntered += (_, _) => overlay.Classes.Add(HoveredClass);
         PointerExited += (_, _) => overlay.Classes.Remove(HoveredClass);
+        PointerPressed += (_, _) => Board!.OnTilePressed(this);
     }
 }
