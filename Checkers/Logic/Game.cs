@@ -39,6 +39,31 @@ public class Game
 
     public void MakeMove(Move move)
     {
-        throw new NotImplementedException();
+        var piece = _board[move.From.Index];
+        _board[move.From.Index] = Piece.Empty;
+        _board[move.To.Index] = piece;
+        if (move.Jumped != null) _board[move.Jumped.Index] = Piece.Empty;
+
+        var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board);
+        if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
+        {
+            MoveFinder = currentPlayerMoveFinder;
+        }
+        else
+        {
+            var opponentHasMoves = currentPlayerMoveFinder.GetMoves().Count > 0;
+
+            CurrentPlayer = CurrentPlayer.Opposite();
+            MoveFinder = new MoveFinder(CurrentPlayer, _board);
+
+            var playerHasMoves = MoveFinder.GetMoves().Count > 0;
+
+            if (!opponentHasMoves && !playerHasMoves)
+                Result = GameResult.Draw;
+            else if (!opponentHasMoves)
+                Result = CurrentPlayer == Color.White ? GameResult.WhiteWins : GameResult.BlackWins;
+            else if (!playerHasMoves)
+                Result = CurrentPlayer == Color.White ? GameResult.BlackWins : GameResult.WhiteWins;
+        }
     }
 }
