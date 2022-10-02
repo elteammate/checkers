@@ -1,24 +1,21 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Checkers.Logic;
-using Checkers.ViewModels;
 
 namespace Checkers.Views;
 
 public partial class BoardView : UserControl
 {
-    private readonly Game _game;
-    private readonly double _cellSize;
-    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
-    private readonly Grid _boardGrid;
-    private readonly Canvas _boardCanvas;
-    private readonly Grid _boardOverlayGrid;
     private readonly Image _boardBackground;
+    private readonly Canvas _boardCanvas;
+    private readonly Grid _boardGrid;
+    private readonly Grid _boardOverlayGrid;
+    private readonly double _cellSize;
+    private readonly Game _game;
+    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
 
     private Position? _selectedPosition;
 
@@ -59,39 +56,37 @@ public partial class BoardView : UserControl
         _boardOverlayGrid.RowDefinitions = RowDefinitions.Parse(gridRows);
 
         for (var row = 0; row < Game.BoardHeight; row++)
+        for (var column = 0; column < Game.BoardWidth; column++)
         {
-            for (var column = 0; column < Game.BoardWidth; column++)
-            {
-                var color = (row + column) % 2 == 0 ? Color.White : Color.Black;
+            var color = (row + column) % 2 == 0 ? Color.White : Color.Black;
 
-                var tile = new BoardTile
+            var tile = new BoardTile
+            {
+                Width = _cellSize,
+                Height = _cellSize,
+                Color = color
+            };
+
+            tile.SetValue(Grid.ColumnProperty, column);
+            tile.SetValue(Grid.RowProperty, row);
+
+            if (color == Color.Black)
+            {
+                TileControl tileControl = new()
                 {
                     Width = _cellSize,
                     Height = _cellSize,
-                    Color = color,
+                    Tile = tile,
+                    Position = new Position(7 - row, column),
+                    Board = this
                 };
 
-                tile.SetValue(Grid.ColumnProperty, column);
-                tile.SetValue(Grid.RowProperty, row);
-
-                if (color == Color.Black)
-                {
-                    TileControl tileControl = new()
-                    {
-                        Width = _cellSize,
-                        Height = _cellSize,
-                        Tile = tile,
-                        Position = new Position(7 - row, column),
-                        Board = this,
-                    };
-
-                    tileControl.SetValue(Grid.ColumnProperty, column);
-                    tileControl.SetValue(Grid.RowProperty, row);
-                    _boardOverlayGrid.Children.Add(tileControl);
-                }
-
-                _boardGrid.Children.Add(tile);
+                tileControl.SetValue(Grid.ColumnProperty, column);
+                tileControl.SetValue(Grid.RowProperty, row);
+                _boardOverlayGrid.Children.Add(tileControl);
             }
+
+            _boardGrid.Children.Add(tile);
         }
 
         _boardBackground.Source = AssetManager.BoardBg.Value;
@@ -150,18 +145,13 @@ public partial class BoardView : UserControl
     {
         var pos = tile.Position!;
         if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor())
-        {
             SelectPiece(pos);
-        }
         else
         {
             var move = _game.Moves.First(
                 move => move.From == _selectedPosition && move.To == pos);
 
-            if (move != null)
-            {
-                _game.MakeMove(move);
-            }
+            if (move != null) _game.MakeMove(move);
         }
     }
 }

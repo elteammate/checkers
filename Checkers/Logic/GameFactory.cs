@@ -5,7 +5,7 @@ using System.Linq;
 namespace Checkers.Logic;
 
 /// <summary>
-/// A helper class for creation of <see cref="Game"/> class instances.
+///     A helper class for creation of <see cref="Game" /> class instances.
 /// </summary>
 public static class GameFactory
 {
@@ -21,29 +21,29 @@ public static class GameFactory
     ).ToImmutableArray();
 
     /// <summary>
-    ///   Creates a new board with the initial setup.
+    ///     Creates a new board with the initial setup.
     /// </summary>
     public static Game Create() => new(InitialBoard.ToArray(), Color.White);
 
     /// <summary>
-    /// Create a new board with the given setup.
+    ///     Create a new board with the given setup.
     /// </summary>
     /// <param name="player">A player who is currently making a turn</param>
     /// <param name="boardNotation">
-    /// Strings with checkers board notation <see cref="BoardFromNotation"/>
+    ///     Strings with checkers board notation <see cref="BoardFromNotation" />
     /// </param>
     public static Game Create(Color player, params string[] boardNotation) =>
         new(BoardFromNotation(boardNotation), player);
 
     /// <summary>
-    /// Returns a pieces layout from the given board notation.
+    ///     Returns a pieces layout from the given board notation.
     /// </summary>
     /// <param name="boardNotation">
-    /// An array of 8 strings.
-    /// Each strings represents a row of the board.
-    /// Unplayable squares are represented by a '/' character.
-    /// Pieces are represented by 'b' and 'w' characters, 'B' and 'W' characters for kings.
-    /// Empty squares are represented by a space character.
+    ///     An array of 8 strings.
+    ///     Each strings represents a row of the board.
+    ///     Unplayable squares are represented by a '/' character.
+    ///     Pieces are represented by 'b' and 'w' characters, 'B' and 'W' characters for kings.
+    ///     Empty squares are represented by a space character.
     /// </param>
     private static Piece[] BoardFromNotation(params string[] boardNotation)
     {

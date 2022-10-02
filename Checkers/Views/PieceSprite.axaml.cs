@@ -1,8 +1,6 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Platform;
 using Checkers.Logic;
 
 namespace Checkers.Views;
@@ -10,6 +8,12 @@ namespace Checkers.Views;
 public partial class PieceSprite : UserControl
 {
     private readonly Image _sprite;
+
+    public PieceSprite()
+    {
+        AvaloniaXamlLoader.Load(this);
+        _sprite = this.FindControl<Image>("Sprite")!;
+    }
 
     public Piece Piece
     {
@@ -24,11 +28,5 @@ public partial class PieceSprite : UserControl
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
         }
-    }
-
-    public PieceSprite()
-    {
-        AvaloniaXamlLoader.Load(this);
-        _sprite = this.FindControl<Image>("Sprite")!;
     }
 }

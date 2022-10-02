@@ -51,7 +51,7 @@ public class PositionConversionTest
         Assert.That(new Position(31).Row, Is.EqualTo(0));
         Assert.That(new Position(31).Column, Is.EqualTo(6));
     }
-    
+
     [Test]
     [SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
     public void Position_IndexCtor_ThrowsIllegalArgument()

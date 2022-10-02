@@ -3,10 +3,10 @@
              xmlns:local="using:Checkers"
              x:Class="Checkers.App">
     <Application.DataTemplates>
-        <local:ViewLocator />
+        <local:ViewLocator/>
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme Mode="Dark" />
+        <FluentTheme Mode="Dark"/>
     </Application.Styles>
 </Application>

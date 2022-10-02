@@ -47,7 +47,7 @@ public class RelativeBoardTest
             MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Enemy,
             MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.Empty,
             MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
+            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty
         }, board);
     }
 

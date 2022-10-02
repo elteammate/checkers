@@ -1,7 +1,7 @@
 namespace Checkers.Logic;
 
 /// <summary>
-/// Represents a move in the game.
+///     Represents a move in the game.
 /// </summary>
 /// <param name="Color">A player who made that move</param>
 /// <param name="From">A starting position of the piece</param>

@@ -7,7 +7,7 @@ using Avalonia.Platform;
 namespace Checkers.Views;
 
 /// <summary>
-/// A helper class for loading images and other assets from the resources.
+///     A helper class for loading images and other assets from the resources.
 /// </summary>
 public static class AssetManager
 {
@@ -15,6 +15,13 @@ public static class AssetManager
 
     private static readonly Lazy<IAssetLoader> AssetLoader =
         new(() => AvaloniaLocator.Current.GetService<IAssetLoader>()!);
+
+    public static readonly Lazy<Bitmap> WhitePiece = LazyLoadBitmap("white-piece.png");
+    public static readonly Lazy<Bitmap> BlackPiece = LazyLoadBitmap("black-piece.png");
+    public static readonly Lazy<Bitmap> WhiteKing = LazyLoadBitmap("white-king.png");
+    public static readonly Lazy<Bitmap> BlackKing = LazyLoadBitmap("black-king.png");
+
+    public static readonly Lazy<Bitmap> BoardBg = LazyLoadBitmap("wood-texture.jpg");
 
     private static Stream Get(string name)
     {
@@ -24,11 +31,4 @@ public static class AssetManager
 
     private static Lazy<Bitmap> LazyLoadBitmap(string name) =>
         new(() => new Bitmap(Get(name)));
-
-    public static readonly Lazy<Bitmap> WhitePiece = LazyLoadBitmap("white-piece.png");
-    public static readonly Lazy<Bitmap> BlackPiece = LazyLoadBitmap("black-piece.png");
-    public static readonly Lazy<Bitmap> WhiteKing = LazyLoadBitmap("white-king.png");
-    public static readonly Lazy<Bitmap> BlackKing = LazyLoadBitmap("black-king.png");
-
-    public static readonly Lazy<Bitmap> BoardBg = LazyLoadBitmap("wood-texture.jpg");
 }

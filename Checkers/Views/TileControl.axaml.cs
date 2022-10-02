@@ -9,11 +9,6 @@ public partial class TileControl : UserControl
 {
     private const string HoveredClass = "Hovered";
 
-    public Position? Position { get; set; }
-    public BoardTile? Tile { get; set; }
-    public PieceSprite? PieceSprite { get; set; }
-    public BoardView? Board { get; set; }
-
     public TileControl()
     {
         AvaloniaXamlLoader.Load(this);
@@ -23,4 +18,9 @@ public partial class TileControl : UserControl
         PointerExited += (_, _) => overlay.Classes.Remove(HoveredClass);
         PointerPressed += (_, _) => Board!.OnTilePressed(this);
     }
+
+    public Position? Position { get; set; }
+    public BoardTile? Tile { get; set; }
+    public PieceSprite? PieceSprite { get; set; }
+    public BoardView? Board { get; set; }
 }

@@ -4,12 +4,11 @@ using System.Collections.Generic;
 namespace Checkers.Logic;
 
 /// <summary>
-/// This class is used to find available moves for a given board state.
-///
-/// It uses the concept of board 'relativity'.
-/// If we transpose the board and replace all black pieces with white pieces,
-/// and vice versa, we can use the same algorithm to find the available moves
-/// for both players.
+///     This class is used to find available moves for a given board state.
+///     It uses the concept of board 'relativity'.
+///     If we transpose the board and replace all black pieces with white pieces,
+///     and vice versa, we can use the same algorithm to find the available moves
+///     for both players.
 /// </summary>
 public class MoveFinder
 {
@@ -22,12 +21,12 @@ public class MoveFinder
         EnemyKing = -2
     }
 
+    private readonly Color _currentPlayer;
+
     /// <summary>
-    /// Stores the relative board state.
+    ///     Stores the relative board state.
     /// </summary>
     public readonly RelativePiece[] RelativeBoard;
-
-    private readonly Color _currentPlayer;
 
     public MoveFinder(Color currentPlayer, Piece[] board)
     {
@@ -72,7 +71,7 @@ public class MoveFinder
     private Position Transform(RelativePosition p) => p.ToAbsolute(_currentPlayer);
 
     /// <summary>
-    ///  A helper method to get a move given relative start and end positions.
+    ///     A helper method to get a move given relative start and end positions.
     /// </summary>
     private Move GetMove(
         RelativePosition relFrom,
@@ -87,8 +86,8 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns a position if it is on the board, otherwise null.
-    /// It does not check if the position is correct
+    ///     Returns a position if it is on the board, otherwise null.
+    ///     It does not check if the position is correct
     /// </summary>
     private static RelativePosition? TryGetPosition(int row, int col)
     {
@@ -110,8 +109,8 @@ public class MoveFinder
         RelativeBoard[position.Index] is RelativePiece.Enemy or RelativePiece.EnemyKing;
 
     /// <summary>
-    /// Returns a list of available non-forced moves for a given piece.
-    /// It assumes that the piece in the given position is not a king and friendly.
+    ///     Returns a list of available non-forced moves for a given piece.
+    ///     It assumes that the piece in the given position is not a king and friendly.
     /// </summary>
     private List<Move> GetNormalMovesOfPiece(RelativePosition pos)
     {
@@ -127,8 +126,8 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns a list of available forced moves for a given piece.
-    /// It assumes that the piece in the given position is not a king and friendly.
+    ///     Returns a list of available forced moves for a given piece.
+    ///     It assumes that the piece in the given position is not a king and friendly.
     /// </summary>
     private List<Move> GetForcedMovesOfPiece(RelativePosition pos)
     {
@@ -159,8 +158,8 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns a list of available non-forced moves for a given piece.
-    /// It assumes that the piece in the given position is a king and friendly.
+    ///     Returns a list of available non-forced moves for a given piece.
+    ///     It assumes that the piece in the given position is a king and friendly.
     /// </summary>
     private List<Move> GetNormalMovesOfKing(RelativePosition relativePosition)
     {
@@ -177,11 +176,9 @@ public class MoveFinder
         void AddToResultWhileAble(int yDir, int xDir)
         {
             for (var i = 1;; i++)
-            {
                 if (!AddToResult(relativePosition.Row + yDir * i,
                         relativePosition.Column + xDir * i))
                     break;
-            }
         }
 
         AddToResultWhileAble(1, 1);
@@ -193,8 +190,8 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns a list of available forced moves for a given piece.
-    /// It assumes that the piece in the given position is a king and friendly.
+    ///     Returns a list of available forced moves for a given piece.
+    ///     It assumes that the piece in the given position is a king and friendly.
     /// </summary>
     private List<Move> GetForcedMovesOfKing(RelativePosition relativePosition)
     {
@@ -229,9 +226,9 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Given a position, returns a list of available non-forced moves from it.
-    /// Works for both kings and normal pieces.
-    /// If the piece in given position is not friendly, throws ArgumentException.
+    ///     Given a position, returns a list of available non-forced moves from it.
+    ///     Works for both kings and normal pieces.
+    ///     If the piece in given position is not friendly, throws ArgumentException.
     /// </summary>
     public List<Move> GetMovesFrom(Position absolutePosition)
     {
@@ -248,9 +245,9 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Given a position, returns a list of available forced moves from it.
-    /// Works for both kings and normal pieces.
-    /// If the piece in given position is not friendly, throws ArgumentException.
+    ///     Given a position, returns a list of available forced moves from it.
+    ///     Works for both kings and normal pieces.
+    ///     If the piece in given position is not friendly, throws ArgumentException.
     /// </summary>
     public List<Move> GetForcedMovesFrom(Position position)
     {
@@ -267,7 +264,7 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns a list of all available moves.
+    ///     Returns a list of all available moves.
     /// </summary>
     /// <param name="forced">Whether method should find non-forced or forced moves only</param>
     private List<Move> GetMoves(bool forced)
@@ -300,13 +297,13 @@ public class MoveFinder
     }
 
     /// <summary>
-    /// Returns all available forced moves.
+    ///     Returns all available forced moves.
     /// </summary>
     public List<Move> GetForcedMoves() => GetMoves(true);
 
     /// <summary>
-    /// Returns all available moves, both forced and non-forced.
-    /// It also checks if there are any forced moves available.
+    ///     Returns all available moves, both forced and non-forced.
+    ///     It also checks if there are any forced moves available.
     /// </summary>
     public List<Move> GetMoves()
     {

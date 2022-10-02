@@ -5,7 +5,7 @@ namespace Checkers.Logic;
 public enum Color : sbyte
 {
     White = 1,
-    Black = -1,
+    Black = -1
 }
 
 public static class ColorExtensions

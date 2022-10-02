@@ -6,10 +6,6 @@ namespace Checkers.Logic;
 
 public class Game
 {
-    public const int BoardHeight = 8;
-    public const int BoardWidth = 8;
-    public const int PlayableTiles = BoardHeight * BoardWidth / 2;
-
     public enum GameResult
     {
         None,
@@ -18,35 +14,13 @@ public class Game
         Draw
     }
 
-    private Piece[] _board;
-    public ImmutableArray<Piece> Board => _board.ToImmutableArray();
-    public MoveFinder MoveFinder { get; private set; }
-    public ImmutableArray<Move> Moves => MoveFinder.GetMoves().ToImmutableArray();
-    public Color CurrentPlayer { get; private set; }
-    public GameResult Result { get; private set; } = GameResult.None;
+    public const int BoardHeight = 8;
+    public const int BoardWidth = 8;
+    public const int PlayableTiles = BoardHeight * BoardWidth / 2;
 
-    private List<Move> _movesLog = new();
-    public IReadOnlyList<Move> MovesLog => _movesLog;
+    private readonly Piece[] _board;
 
-    public IReadOnlyDictionary<Position, Piece> PieceMapping
-    {
-        get
-        {
-            var mapping = new Dictionary<Position, Piece>();
-            for (var i = 0; i < PlayableTiles; i++)
-            {
-                if (_board[i] != Piece.Empty)
-                    mapping.Add(new Position(i), _board[i]);
-            }
-
-            return mapping;
-        }
-    }
-
-    public event EventHandler<Move> MoveMade = delegate { };
-    public event EventHandler<Position> PieceCaptured = delegate { };
-    public event EventHandler<Position> PiecePromoted = delegate { };
-    public event EventHandler<GameResult> GameEnded = delegate { };
+    private readonly List<Move> _movesLog = new();
 
 
     public Game(Piece[] initialBoard, Color firstPlayer)
@@ -58,6 +32,31 @@ public class Game
         _board = initialBoard;
         MoveFinder = new MoveFinder(CurrentPlayer, initialBoard);
     }
+
+    public ImmutableArray<Piece> Board => _board.ToImmutableArray();
+    public MoveFinder MoveFinder { get; private set; }
+    public ImmutableArray<Move> Moves => MoveFinder.GetMoves().ToImmutableArray();
+    public Color CurrentPlayer { get; private set; }
+    public GameResult Result { get; private set; } = GameResult.None;
+    public IReadOnlyList<Move> MovesLog => _movesLog;
+
+    public IReadOnlyDictionary<Position, Piece> PieceMapping
+    {
+        get
+        {
+            var mapping = new Dictionary<Position, Piece>();
+            for (var i = 0; i < PlayableTiles; i++)
+                if (_board[i] != Piece.Empty)
+                    mapping.Add(new Position(i), _board[i]);
+
+            return mapping;
+        }
+    }
+
+    public event EventHandler<Move> MoveMade = delegate { };
+    public event EventHandler<Position> PieceCaptured = delegate { };
+    public event EventHandler<Position> PiecePromoted = delegate { };
+    public event EventHandler<GameResult> GameEnded = delegate { };
 
     private void TryPromote(Position pos)
     {
@@ -92,9 +91,7 @@ public class Game
 
         var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board);
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
-        {
             MoveFinder = currentPlayerMoveFinder;
-        }
         else
         {
             var opponentHasMoves = currentPlayerMoveFinder.GetMoves().Count > 0;

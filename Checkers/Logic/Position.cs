@@ -3,11 +3,11 @@ using System;
 namespace Checkers.Logic;
 
 /// <summary>
-/// This class represents a position on a checkers board.
-/// The usual notation is used, with the origin at the top left.
-/// The tile 0 is the top left corner and is occupied by the black 
-/// piece at the start of the game.
-/// <code>
+///     This class represents a position on a checkers board.
+///     The usual notation is used, with the origin at the top left.
+///     The tile 0 is the top left corner and is occupied by the black
+///     piece at the start of the game.
+///     <code>
 ///  >      col 0  1  2  3  4  5  6  7
 ///  >   row   
 ///  >   7    __  0 __  1 __  2 __  3
@@ -22,13 +22,6 @@ namespace Checkers.Logic;
 /// </summary>
 public class Position
 {
-    public int Row => Game.BoardHeight - 1 - Index / (Game.BoardWidth / 2);
-
-    public int Column =>
-        Index % (Game.BoardWidth / 2) * 2 + Row % 2;
-
-    public int Index { get; }
-
     public Position(int index)
     {
         if (index is < 0 or > 31)
@@ -48,7 +41,14 @@ public class Position
             throw new ArgumentException("Invalid position");
     }
 
-    public RelativePosition ToRelative(Color player) => new RelativePosition(player, Index);
+    public int Row => Game.BoardHeight - 1 - Index / (Game.BoardWidth / 2);
+
+    public int Column =>
+        Index % (Game.BoardWidth / 2) * 2 + Row % 2;
+
+    public int Index { get; }
+
+    public RelativePosition ToRelative(Color player) => new(player, Index);
 
     public static bool operator ==(Position? left, Position? right) => left?.Index == right?.Index;
     public static bool operator !=(Position? left, Position? right) => left?.Index != right?.Index;
@@ -60,12 +60,11 @@ public class Position
 }
 
 /// <summary>
-/// This class is used by <see cref="MoveFinder"/> to
-/// represent a position on the oriented board.
-///
-/// The position with index 0 is the top left corner of the board if
-/// current player is white and the bottom right corner if current player
-/// is black.
+///     This class is used by <see cref="MoveFinder" /> to
+///     represent a position on the oriented board.
+///     The position with index 0 is the top left corner of the board if
+///     current player is white and the bottom right corner if current player
+///     is black.
 /// </summary>
 public class RelativePosition
 {
@@ -94,14 +93,14 @@ public class RelativePosition
             _position = new Position(row, column);
     }
 
-    public Position ToAbsolute(Color color) =>
-        new Position(color == Color.White
-            ? _position.Index
-            : Game.PlayableTiles - 1 - _position.Index);
-
     public int Index => _position.Index;
     public int Row => _position.Row;
     public int Column => _position.Column;
+
+    public Position ToAbsolute(Color color) =>
+        new(color == Color.White
+            ? _position.Index
+            : Game.PlayableTiles - 1 - _position.Index);
 
     public override string ToString() => $"({Row}, {Column})";
 }
