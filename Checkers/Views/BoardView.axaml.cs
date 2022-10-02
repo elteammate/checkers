@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -11,9 +12,9 @@ namespace Checkers.Views;
 
 public partial class BoardView : UserControl
 {
-    private readonly BoardViewModel _viewModel;
+    private readonly Game _game;
     private readonly double _cellSize;
-    private Dictionary<Position, PieceSprite> _pieceSprites = new();
+    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
     private readonly Grid _boardGrid;
     private readonly Canvas _boardCanvas;
     private readonly Grid _boardOverlayGrid;
@@ -23,8 +24,7 @@ public partial class BoardView : UserControl
 
     public BoardView()
     {
-        _viewModel = new BoardViewModel();
-        DataContext = _viewModel;
+        _game = GameFactory.Create();
 
         AvaloniaXamlLoader.Load(this);
 
@@ -35,7 +35,7 @@ public partial class BoardView : UserControl
 
         _cellSize = _boardGrid.Width / Game.BoardWidth;
 
-        _viewModel.PieceMoved += (_, move) => MovePieceSprites(move);
+        _game.MoveMade += (_, move) => MovePieceSprites(move);
 
         InitializeBoard();
         InitializePieces();
@@ -99,7 +99,7 @@ public partial class BoardView : UserControl
 
     private void InitializePieces()
     {
-        foreach (var pieceOnBoard in _viewModel.Pieces)
+        foreach (var pieceOnBoard in _game.PieceMapping)
         {
             var pieceSprite = new PieceSprite();
             var position = pieceOnBoard.Key;
@@ -149,17 +149,18 @@ public partial class BoardView : UserControl
     public void OnTilePressed(TileControl tile)
     {
         var pos = tile.Position!;
-        if (_viewModel.Game.CurrentPlayer == _viewModel.Game.Board[pos.Index].GetColor())
+        if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor())
         {
             SelectPiece(pos);
         }
         else
         {
-            var move = _viewModel.Moves.Find(
+            var move = _game.Moves.First(
                 move => move.From == _selectedPosition && move.To == pos);
+
             if (move != null)
             {
-                _viewModel.Move(move);
+                _game.MakeMove(move);
             }
         }
     }

@@ -21,11 +21,33 @@ public class Game
     private Piece[] _board;
     public ImmutableArray<Piece> Board => _board.ToImmutableArray();
     public MoveFinder MoveFinder { get; private set; }
+    public ImmutableArray<Move> Moves => MoveFinder.GetMoves().ToImmutableArray();
     public Color CurrentPlayer { get; private set; }
     public GameResult Result { get; private set; } = GameResult.None;
 
     private List<Move> _movesLog = new();
     public IReadOnlyList<Move> MovesLog => _movesLog;
+
+    public IReadOnlyDictionary<Position, Piece> PieceMapping
+    {
+        get
+        {
+            var mapping = new Dictionary<Position, Piece>();
+            for (var i = 0; i < PlayableTiles; i++)
+            {
+                if (_board[i] != Piece.Empty)
+                    mapping.Add(new Position(i), _board[i]);
+            }
+
+            return mapping;
+        }
+    }
+
+    public event EventHandler<Move> MoveMade = delegate { };
+    public event EventHandler<Position> PieceCaptured = delegate { };
+    public event EventHandler<Position> PiecePromoted = delegate { };
+    public event EventHandler<GameResult> GameEnded = delegate { };
+
 
     public Game(Piece[] initialBoard, Color firstPlayer)
     {
@@ -44,10 +66,12 @@ public class Game
         if (pos.Row == BoardHeight - 1 && _board[pos.Index] is Piece.White)
         {
             _board[pos.Index] = Piece.WhiteKing;
+            PiecePromoted(this, pos);
         }
         else if (pos.Row == 0 && _board[pos.Index] is Piece.Black)
         {
             _board[pos.Index] = Piece.BlackKing;
+            PiecePromoted(this, pos);
         }
     }
 
@@ -56,9 +80,15 @@ public class Game
         var piece = _board[move.From.Index];
         _board[move.From.Index] = Piece.Empty;
         _board[move.To.Index] = piece;
-        if (move.Jumped != null) _board[move.Jumped.Index] = Piece.Empty;
+
+        if (move.Jumped != null)
+        {
+            _board[move.Jumped.Index] = Piece.Empty;
+            PieceCaptured(this, move.Jumped);
+        }
 
         TryPromote(move.To);
+        MoveMade(this, move);
 
         var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board);
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
@@ -74,12 +104,17 @@ public class Game
 
             var playerHasMoves = MoveFinder.GetMoves().Count > 0;
 
-            if (!opponentHasMoves && !playerHasMoves)
-                Result = GameResult.Draw;
-            else if (!opponentHasMoves)
-                Result = CurrentPlayer == Color.White ? GameResult.WhiteWins : GameResult.BlackWins;
-            else if (!playerHasMoves)
-                Result = CurrentPlayer == Color.White ? GameResult.BlackWins : GameResult.WhiteWins;
+            if (!opponentHasMoves)
+            {
+                if (!playerHasMoves)
+                    Result = GameResult.Draw;
+                else
+                    Result = CurrentPlayer == Color.White
+                        ? GameResult.WhiteWins
+                        : GameResult.BlackWins;
+
+                GameEnded(this, Result);
+            }
         }
     }
 }
