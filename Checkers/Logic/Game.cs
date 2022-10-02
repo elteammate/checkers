@@ -37,12 +37,28 @@ public class Game
         MoveFinder = new MoveFinder(CurrentPlayer, initialBoard);
     }
 
+    private void TryPromote(Position pos)
+    {
+        if (_board[pos.Index] is Piece.Empty or Piece.BlackKing or Piece.WhiteKing) return;
+
+        if (pos.Row == BoardHeight - 1 && _board[pos.Index] is Piece.White)
+        {
+            _board[pos.Index] = Piece.WhiteKing;
+        }
+        else if (pos.Row == 0 && _board[pos.Index] is Piece.Black)
+        {
+            _board[pos.Index] = Piece.BlackKing;
+        }
+    }
+
     public void MakeMove(Move move)
     {
         var piece = _board[move.From.Index];
         _board[move.From.Index] = Piece.Empty;
         _board[move.To.Index] = piece;
         if (move.Jumped != null) _board[move.Jumped.Index] = Piece.Empty;
+
+        TryPromote(move.To);
 
         var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board);
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
