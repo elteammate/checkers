@@ -43,6 +43,7 @@ public partial class BoardView : UserControl
 
         _game.MoveMade += (_, move) => MovePieceSprites(move);
         _game.PiecePromoted += (_, pos) => UpdatePromotedSprite(pos);
+        _game.PieceCaptured += (_, pos) => RemoveCapturedPiece(pos);
 
         InitializeBoard();
         InitializePieces();
@@ -136,13 +137,6 @@ public partial class BoardView : UserControl
             pieceSprite.SetValue(Canvas.BottomProperty, y);
         }
 
-        if (move.Jumped != null &&
-            _pieceSprites.TryGetValue(move.Jumped!, out var jumpedPieceSprite))
-        {
-            _pieceSprites.Remove(move.Jumped!);
-            _boardCanvas.Children.Remove(jumpedPieceSprite);
-        }
-
         SelectTile(null);
     }
 
@@ -151,6 +145,15 @@ public partial class BoardView : UserControl
         if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
         {
             pieceSprite.Piece = _game.Board[pos.Index].Promote();
+        }
+    }
+
+    private void RemoveCapturedPiece(Position pos)
+    {
+        if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
+        {
+            _pieceSprites.Remove(pos);
+            _boardCanvas.Children.Remove(pieceSprite);
         }
     }
 
