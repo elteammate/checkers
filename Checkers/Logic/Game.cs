@@ -81,13 +81,13 @@ public class Game
             PieceCaptured(this, move.Jumped);
         }
 
+        MoveMade(this, move);
         TryPromote(move.To);
 
         var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board, move.To);
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
         {
             MoveFinder = currentPlayerMoveFinder;
-            MoveMade(this, move);
         }
         else
         {
@@ -95,8 +95,6 @@ public class Game
 
             CurrentPlayer = CurrentPlayer.Opposite();
             MoveFinder = new MoveFinder(CurrentPlayer, _board);
-
-            MoveMade(this, move);
 
             var playerHasMoves = MoveFinder.GetMoves().Count > 0;
 

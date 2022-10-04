@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,15 @@ public partial class BoardView : UserControl
 
     public BoardView()
     {
-        _game = GameFactory.Create();
+        _game = GameFactory.Create(Color.White,
+            "/ / / / ",
+            " / / / /",
+            "/ /w/ / ",
+            " / / / /",
+            "/ / / / ",
+            " / / /b/",
+            "/ / / / ",
+            " / / / /");
 
         AvaloniaXamlLoader.Load(this);
 
@@ -33,6 +42,7 @@ public partial class BoardView : UserControl
         _cellSize = _boardGrid.Width / Game.BoardWidth;
 
         _game.MoveMade += (_, move) => MovePieceSprites(move);
+        _game.PiecePromoted += (_, pos) => UpdatePromotedSprite(pos);
 
         InitializeBoard();
         InitializePieces();
@@ -133,7 +143,15 @@ public partial class BoardView : UserControl
             _boardCanvas.Children.Remove(jumpedPieceSprite);
         }
 
-        if (move.Color != _game.CurrentPlayer) SelectTile(null);
+        SelectTile(null);
+    }
+
+    private void UpdatePromotedSprite(Position pos)
+    {
+        if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
+        {
+            pieceSprite.Piece = _game.Board[pos.Index].Promote();
+        }
     }
 
     private void SelectTile(TileControl? tile)
