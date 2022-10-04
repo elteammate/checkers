@@ -28,9 +28,12 @@ public class MoveFinder
     /// </summary>
     public readonly RelativePiece[] RelativeBoard;
 
-    public MoveFinder(Color currentPlayer, Piece[] board)
+    public readonly Position? ForcedChainPiece;
+
+    public MoveFinder(Color currentPlayer, Piece[] board, Position? forcedChainPiece = null)
     {
         _currentPlayer = currentPlayer;
+        ForcedChainPiece = forcedChainPiece;
 
         RelativeBoard = new RelativePiece[Game.PlayableTiles];
         for (var index = 0; index < Game.PlayableTiles; index++)
@@ -274,6 +277,12 @@ public class MoveFinder
     {
         if (forced && _forcedMovesCache != null) return _forcedMovesCache;
         if (!forced && _movesCache != null) return _movesCache;
+
+        if (ForcedChainPiece != null && forced)
+        {
+            _forcedMovesCache = GetForcedMovesFrom(ForcedChainPiece!);
+            return _forcedMovesCache;
+        }
 
         var moves = new List<Move>();
         for (var index = 0; index < Game.PlayableTiles; index++)
