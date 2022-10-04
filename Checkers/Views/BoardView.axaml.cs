@@ -153,7 +153,7 @@ public partial class BoardView : UserControl
         if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
         {
             _pieceSprites.Remove(pos);
-            _boardCanvas.Children.Remove(pieceSprite);
+            pieceSprite.Piece = Piece.Empty;
         }
     }
 
