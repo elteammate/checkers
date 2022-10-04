@@ -17,7 +17,7 @@ public partial class BoardView : UserControl
     private readonly Game _game;
     private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
 
-    private Position? _selectedPosition;
+    private TileControl? _selectedTile;
 
     public BoardView()
     {
@@ -133,25 +133,29 @@ public partial class BoardView : UserControl
             _boardCanvas.Children.Remove(jumpedPieceSprite);
         }
 
-        _selectedPosition = null;
+        if (move.Color != _game.CurrentPlayer) SelectTile(null);
     }
 
-    private void SelectPiece(Position pos)
+    private void SelectTile(TileControl? tile)
     {
-        _selectedPosition = pos;
+        if (_selectedTile != null) _selectedTile.IsSelected = false;
+        _selectedTile = tile;
+        if (_selectedTile != null) _selectedTile.IsSelected = true;
     }
 
     public void OnTilePressed(TileControl tile)
     {
         var pos = tile.Position!;
-        if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor())
+
+        if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor() &&
+            _game.MoveFinder.GetMoves().FirstOrDefault(move => move.From == pos) != null)
         {
-            SelectPiece(pos);
+            SelectTile(tile);
         }
-        else if (_selectedPosition != null)
+        else if (_selectedTile != null)
         {
             var move = _game.MoveFinder.GetMoves().FirstOrDefault(
-                move => move.From == _selectedPosition && move.To == pos);
+                move => move.From == _selectedTile.Position! && move.To == pos);
 
             if (move != null) _game.MakeMove(move);
         }

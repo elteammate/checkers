@@ -8,14 +8,17 @@ namespace Checkers.Views;
 public partial class TileControl : UserControl
 {
     private const string HoveredClass = "Hovered";
+    private const string SelectedClass = "Selected";
+
+    private readonly Rectangle _overlay;
 
     public TileControl()
     {
         AvaloniaXamlLoader.Load(this);
-        var overlay = this.FindControl<Rectangle>("TileOverlay")!;
+        _overlay = this.FindControl<Rectangle>("TileOverlay")!;
 
-        PointerEntered += (_, _) => overlay.Classes.Add(HoveredClass);
-        PointerExited += (_, _) => overlay.Classes.Remove(HoveredClass);
+        PointerEntered += (_, _) => _overlay.Classes.Add(HoveredClass);
+        PointerExited += (_, _) => _overlay.Classes.Remove(HoveredClass);
         PointerPressed += (_, _) => Board!.OnTilePressed(this);
     }
 
@@ -23,4 +26,16 @@ public partial class TileControl : UserControl
     public BoardTile? Tile { get; set; }
     public PieceSprite? PieceSprite { get; set; }
     public BoardView? Board { get; set; }
+
+
+    public bool IsSelected
+    {
+        set
+        {
+            if (value)
+                _overlay.Classes.Add(SelectedClass);
+            else
+                _overlay.Classes.Remove(SelectedClass);
+        }
+    }
 }

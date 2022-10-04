@@ -11,6 +11,9 @@
         <Style Selector="Rectangle.Hovered">
             <Setter Property="Opacity" Value="0.4"/>
         </Style>
+        <Style Selector="Rectangle.Selected">
+            <Setter Property="Opacity" Value="0.3"/>
+        </Style>
     </UserControl.Styles>
     <Rectangle
         Width="100" Height="100"
