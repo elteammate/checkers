@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Checkers.Logic;
 
@@ -43,9 +42,6 @@ public class Game
             return mapping;
         });
     }
-
-    private readonly List<Move> _movesLog = new();
-    public IReadOnlyList<Move> MovesLog => _movesLog;
 
     public Color CurrentPlayer { get; private set; }
 
