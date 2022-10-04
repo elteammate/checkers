@@ -94,7 +94,7 @@ public partial class BoardView : UserControl
 
     private void InitializePieces()
     {
-        foreach (var pieceOnBoard in _game.PieceMapping)
+        foreach (var pieceOnBoard in _game.PieceMapping.Value)
         {
             var pieceSprite = new PieceSprite();
             var position = pieceOnBoard.Key;
@@ -145,10 +145,12 @@ public partial class BoardView : UserControl
     {
         var pos = tile.Position!;
         if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor())
-            SelectPiece(pos);
-        else
         {
-            var move = _game.Moves.First(
+            SelectPiece(pos);
+        }
+        else if (_selectedPosition != null)
+        {
+            var move = _game.MoveFinder.GetMoves().FirstOrDefault(
                 move => move.From == _selectedPosition && move.To == pos);
 
             if (move != null) _game.MakeMove(move);

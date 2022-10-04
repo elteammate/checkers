@@ -19,9 +19,10 @@ public class Game
     public const int PlayableTiles = BoardHeight * BoardWidth / 2;
 
     private readonly Piece[] _board;
+    public IReadOnlyList<Piece> Board => _board;
+    public readonly Cached<IReadOnlyDictionary<Position, Piece>> PieceMapping;
 
-    private readonly List<Move> _movesLog = new();
-
+    public MoveFinder MoveFinder { get; private set; }
 
     public Game(Piece[] initialBoard, Color firstPlayer)
     {
@@ -31,18 +32,8 @@ public class Game
         CurrentPlayer = firstPlayer;
         _board = initialBoard;
         MoveFinder = new MoveFinder(CurrentPlayer, initialBoard);
-    }
 
-    public ImmutableArray<Piece> Board => _board.ToImmutableArray();
-    public MoveFinder MoveFinder { get; private set; }
-    public ImmutableArray<Move> Moves => MoveFinder.GetMoves().ToImmutableArray();
-    public Color CurrentPlayer { get; private set; }
-    public GameResult Result { get; private set; } = GameResult.None;
-    public IReadOnlyList<Move> MovesLog => _movesLog;
-
-    public IReadOnlyDictionary<Position, Piece> PieceMapping
-    {
-        get
+        PieceMapping = new Cached<IReadOnlyDictionary<Position, Piece>>(() =>
         {
             var mapping = new Dictionary<Position, Piece>();
             for (var i = 0; i < PlayableTiles; i++)
@@ -50,8 +41,16 @@ public class Game
                     mapping.Add(new Position(i), _board[i]);
 
             return mapping;
-        }
+        });
     }
+
+    private readonly List<Move> _movesLog = new();
+    public IReadOnlyList<Move> MovesLog => _movesLog;
+
+    public Color CurrentPlayer { get; private set; }
+
+    public GameResult Result { get; private set; } = GameResult.None;
+
 
     public event EventHandler<Move> MoveMade = delegate { };
     public event EventHandler<Position> PieceCaptured = delegate { };

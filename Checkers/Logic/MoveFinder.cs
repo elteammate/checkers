@@ -263,12 +263,18 @@ public class MoveFinder
         };
     }
 
+    private List<Move>? _movesCache = null;
+    private List<Move>? _forcedMovesCache = null;
+
     /// <summary>
     ///     Returns a list of all available moves.
     /// </summary>
     /// <param name="forced">Whether method should find non-forced or forced moves only</param>
     private List<Move> GetMoves(bool forced)
     {
+        if (forced && _forcedMovesCache != null) return _forcedMovesCache;
+        if (!forced && _movesCache != null) return _movesCache;
+
         var moves = new List<Move>();
         for (var index = 0; index < Game.PlayableTiles; index++)
         {
@@ -293,6 +299,10 @@ public class MoveFinder
             }
         }
 
+        if (forced)
+            _forcedMovesCache = moves;
+        else
+            _movesCache = moves;
         return moves;
     }
 
