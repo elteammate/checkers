@@ -51,6 +51,7 @@ public class Game
     public event EventHandler<Move> MoveMade = delegate { };
     public event EventHandler<Position> PieceCaptured = delegate { };
     public event EventHandler<Position> PiecePromoted = delegate { };
+    public event EventHandler<Color> PlayerTransition = delegate { };
     public event EventHandler<GameResult> GameEnded = delegate { };
 
     private void TryPromote(Position pos)
@@ -98,16 +99,20 @@ public class Game
 
             var playerHasMoves = MoveFinder.GetMoves().Count > 0;
 
-            if (!opponentHasMoves)
+            if (!playerHasMoves)
             {
-                if (!playerHasMoves)
+                if (!opponentHasMoves)
                     Result = GameResult.Draw;
                 else
-                    Result = CurrentPlayer == Color.White
+                    Result = CurrentPlayer == Color.Black
                         ? GameResult.WhiteWins
                         : GameResult.BlackWins;
 
                 GameEnded(this, Result);
+            }
+            else
+            {
+                PlayerTransition(this, CurrentPlayer);
             }
         }
     }

@@ -2,15 +2,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="Checkers.Views.BoardView">
 
-    <Viewbox Stretch="Uniform">
-        <Canvas Width="800" Height="800">
-            <Image Width="800" Height="800" Name="BoardBackground"/>
-            <Grid Width="800" Height="800" Name="BoardGrid"/>
-            <Canvas Width="800" Height="800" Name="BoardCanvas"/>
-            <Grid Width="800" Height="800" Name="BoardOverlayGrid"/>
-        </Canvas>
-    </Viewbox>
+    <Grid ColumnDefinitions="Auto,*">
+        <Viewbox Stretch="Uniform" Grid.Column="0">
+            <Canvas Width="800" Height="800">
+                <Image Width="800" Height="800" Name="BoardBackground"/>
+                <Grid Width="800" Height="800" Name="BoardGrid"/>
+                <Canvas Width="800" Height="800" Name="BoardCanvas"/>
+                <Grid Width="800" Height="800" Name="BoardOverlayGrid"/>
+            </Canvas>
+        </Viewbox>
+        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                <Button Grid.Row="0" Grid.Column="0" Width="200">
+                    <TextBlock Text="Player vs Player" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Grid.Row="0" Grid.Column="1" Width="200">
+                    <TextBlock Text="Player vs AI" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="0" Width="200">
+                    <TextBlock Text="AI vs Player" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="1" Width="200">
+                    <TextBlock Text="AI vs AI" HorizontalAlignment="Center"/>
+                </Button>
+            </Grid>
+            <ScrollViewer Grid.Row="1" Padding="10">
+                <StackPanel
+                    Orientation="Vertical"
+                    HorizontalAlignment="Left"
+                    Name="LogPanel">
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>
