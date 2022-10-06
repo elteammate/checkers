@@ -16,8 +16,10 @@
         </Viewbox>
         <Grid Grid.Column="1" RowDefinitions="Auto,*">
             <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
-                <Button Grid.Row="0" Grid.Column="0" Width="200">
-                    <TextBlock Text="Player vs Player" HorizontalAlignment="Center"/>
+                <Button Grid.Row="0" Grid.Column="0" Width="200" Click="NewGame">
+                    <TextBlock
+                        Text="Player vs Player"
+                        HorizontalAlignment="Center"/>
                 </Button>
                 <Button Grid.Row="0" Grid.Column="1" Width="200">
                     <TextBlock Text="Player vs AI" HorizontalAlignment="Center"/>
@@ -33,7 +35,7 @@
                 <StackPanel
                     Orientation="Vertical"
                     HorizontalAlignment="Left"
-                    Name="LogPanel">
+                    Name="LogPanel" Margin="0, 50">
 
                 </StackPanel>
             </ScrollViewer>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Checkers.Logic;
 
@@ -16,15 +17,42 @@ public partial class BoardView : UserControl
     private readonly Grid _boardOverlayGrid;
     private readonly Panel _logPanel;
     private readonly double _cellSize;
-    private readonly Game _game;
-    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
 
+    private Game _game;
+
+    private Game Game
+    {
+        get => _game;
+        set
+        {
+            _game = value;
+            _game.MoveMade += (_, move) => MovePieceSprites(move);
+            _game.PiecePromoted += (_, pos) => UpdatePromotedSprite(pos);
+            _game.PieceCaptured += (_, pos) => RemoveCapturedPiece(pos);
+            _game.PlayerTransition += (_, player) => Log($"{player}'s turn");
+            _game.GameEnded += (_, result) => EndGame(result);
+            SelectedTile = null;
+        }
+    }
+
+    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
 
     private TileControl? _selectedTile;
 
+    private TileControl? SelectedTile
+    {
+        get => _selectedTile;
+        set
+        {
+            if (_selectedTile != null) _selectedTile.IsSelected = false;
+            _selectedTile = value;
+            if (_selectedTile != null) _selectedTile.IsSelected = true;
+        }
+    }
+
     public BoardView()
     {
-        _game = GameFactory.Create(Color.White,
+        Game = GameFactory.Create(Color.White,
             "/ / / / ",
             " / / / /",
             "/ /w/ / ",
@@ -43,12 +71,6 @@ public partial class BoardView : UserControl
         _logPanel = this.FindControl<StackPanel>(nameof(LogPanel))!;
 
         _cellSize = _boardGrid.Width / Game.BoardWidth;
-
-        _game.MoveMade += (_, move) => MovePieceSprites(move);
-        _game.PiecePromoted += (_, pos) => UpdatePromotedSprite(pos);
-        _game.PieceCaptured += (_, pos) => RemoveCapturedPiece(pos);
-        _game.PlayerTransition += (_, player) => Log($"{player}'s turn");
-        _game.GameEnded += (_, result) => EndGame(result);
 
         InitializeBoard();
         InitializePieces();
@@ -109,13 +131,14 @@ public partial class BoardView : UserControl
         }
 
         _boardBackground.Source = AssetManager.BoardBg.Value;
-
-        Log("Game is ready!");
     }
 
     private void InitializePieces()
     {
-        foreach (var pieceOnBoard in _game.PieceMapping.Value)
+        _pieceSprites.Clear();
+        _boardCanvas.Children.Clear();
+
+        foreach (var pieceOnBoard in Game.PieceMapping.Value)
         {
             var pieceSprite = new PieceSprite();
             var position = pieceOnBoard.Key;
@@ -131,6 +154,8 @@ public partial class BoardView : UserControl
 
             _boardCanvas.Children.Add(pieceSprite);
         }
+
+        Log("Game is ready!");
     }
 
     private void MovePieceSprites(Move move)
@@ -147,7 +172,7 @@ public partial class BoardView : UserControl
             pieceSprite.SetValue(Canvas.BottomProperty, y);
         }
 
-        SelectTile(null);
+        SelectedTile = null;
 
         Log($"{move.Color} moved from {move.From.Index + 1} to {move.To.Index + 1}");
     }
@@ -156,7 +181,7 @@ public partial class BoardView : UserControl
     {
         if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
         {
-            pieceSprite.Piece = _game.Board[pos.Index].Promote();
+            pieceSprite.Piece = Game.Board[pos.Index].Promote();
             Log($"Piece at {pos.Index + 1} was promoted to king!");
         }
     }
@@ -172,28 +197,21 @@ public partial class BoardView : UserControl
         Log($"Piece at {pos.Index + 1} was captured");
     }
 
-    private void SelectTile(TileControl? tile)
-    {
-        if (_selectedTile != null) _selectedTile.IsSelected = false;
-        _selectedTile = tile;
-        if (_selectedTile != null) _selectedTile.IsSelected = true;
-    }
-
     public void OnTilePressed(TileControl tile)
     {
         var pos = tile.Position!;
 
-        if (_game.CurrentPlayer == _game.Board[pos.Index].GetColor() &&
-            _game.MoveFinder.GetMoves().FirstOrDefault(move => move.From == pos) != null)
+        if (Game.CurrentPlayer == Game.Board[pos.Index].GetColor() &&
+            Game.MoveFinder.GetMoves().FirstOrDefault(move => move.From == pos) != null)
         {
-            SelectTile(tile);
+            SelectedTile = tile;
         }
-        else if (_selectedTile != null)
+        else if (SelectedTile != null)
         {
-            var move = _game.MoveFinder.GetMoves().FirstOrDefault(
-                move => move.From == _selectedTile.Position! && move.To == pos);
+            var move = Game.MoveFinder.GetMoves().FirstOrDefault(
+                move => move.From == SelectedTile.Position! && move.To == pos);
 
-            if (move != null) _game.MakeMove(move);
+            if (move != null) Game.MakeMove(move);
         }
     }
 
@@ -207,5 +225,12 @@ public partial class BoardView : UserControl
             Game.GameResult.Draw => "Draw!",
             _ => throw new ArgumentOutOfRangeException(nameof(result), result, null)
         });
+    }
+
+    private void NewGame(object sender, RoutedEventArgs e)
+    {
+        Game = GameFactory.Create();
+        _logPanel.Children.Clear();
+        InitializePieces();
     }
 }
