@@ -16,6 +16,8 @@ public partial class PieceSprite : UserControl
     private const string CapturedClass = "Captured";
     private readonly Image _sprite;
 
+    public double TileSize = 100;
+
     public PieceSprite()
     {
         AvaloniaXamlLoader.Load(this);
@@ -42,6 +44,19 @@ public partial class PieceSprite : UserControl
 
             if (value == Piece.Empty)
                 _sprite.Classes.Add(CapturedClass);
+        }
+    }
+
+    /// <summary>
+    /// The position of the piece on the board.
+    /// When set, the sprite is moved to the correct position.
+    /// </summary>
+    public Position Position
+    {
+        set
+        {
+            SetValue(Canvas.LeftProperty, value.Column * TileSize);
+            SetValue(Canvas.BottomProperty, value.Row * TileSize);
         }
     }
 }

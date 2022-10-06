@@ -149,16 +149,12 @@ public partial class BoardView : UserControl
 
         foreach (var pieceOnBoard in Game.PieceMapping.Value)
         {
-            var pieceSprite = new PieceSprite();
+            var pieceSprite = new PieceSprite { TileSize = _tileSize };
             var position = pieceOnBoard.Key;
             var pieceType = pieceOnBoard.Value;
 
-            var x = position.Column * _tileSize;
-            var y = position.Row * _tileSize;
-
             pieceSprite.Piece = pieceType;
-            pieceSprite.SetValue(Canvas.LeftProperty, x);
-            pieceSprite.SetValue(Canvas.BottomProperty, y);
+            pieceSprite.Position = position;
             _pieceSprites.Add(position, pieceSprite);
 
             _boardCanvas.Children.Add(pieceSprite);
@@ -176,12 +172,7 @@ public partial class BoardView : UserControl
         {
             _pieceSprites.Remove(move.From);
             _pieceSprites.Add(move.To, pieceSprite);
-
-            var x = move.To.Column * _tileSize;
-            var y = move.To.Row * _tileSize;
-
-            pieceSprite.SetValue(Canvas.LeftProperty, x);
-            pieceSprite.SetValue(Canvas.BottomProperty, y);
+            pieceSprite.Position = move.To;
         }
 
         SelectedTile = null;
