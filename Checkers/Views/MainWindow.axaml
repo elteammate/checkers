@@ -5,7 +5,7 @@
         xmlns:views="clr-namespace:Checkers.Views"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         Width="1200" Height="800"
-        CanResize="false"
+        CanResize="False"
         x:Class="Checkers.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Checkers">
