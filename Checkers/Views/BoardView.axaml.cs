@@ -16,10 +16,13 @@ public partial class BoardView : UserControl
     private readonly Grid _boardGrid;
     private readonly Grid _boardOverlayGrid;
     private readonly Panel _logPanel;
-    private readonly double _cellSize;
+    private readonly double _tileSize;
 
     private Game _game;
 
+    /// <summary>
+    /// A game being played on the board.
+    /// </summary>
     private Game Game
     {
         get => _game;
@@ -42,6 +45,9 @@ public partial class BoardView : UserControl
 
     private TileControl? _selectedTile;
 
+    /// <summary>
+    /// A tile that is currently selected by player.
+    /// </summary>
     private TileControl? SelectedTile
     {
         get => _selectedTile;
@@ -63,16 +69,22 @@ public partial class BoardView : UserControl
         _boardBackground = this.FindControl<Image>(nameof(BoardBackground))!;
         _logPanel = this.FindControl<StackPanel>(nameof(LogPanel))!;
 
-        _cellSize = _boardGrid.Width / Game.BoardWidth;
+        _tileSize = _boardGrid.Width / Game.BoardWidth;
 
         InitializeBoard();
 
         Game = GameFactory.Create();
     }
 
+    /// <summary>
+    /// Adds an entry to the log
+    /// </summary>
     private void Log(string message) =>
         _logPanel.Children.Add(new TextBlock { Text = message });
 
+    /// <summary>
+    /// Fills the board with tiles, sets up the background 
+    /// </summary>
     private void InitializeBoard()
     {
         var gridColumns = new StringBuilder()
@@ -97,8 +109,8 @@ public partial class BoardView : UserControl
 
             var tile = new BoardTile
             {
-                Width = _cellSize,
-                Height = _cellSize,
+                Width = _tileSize,
+                Height = _tileSize,
                 Color = color
             };
 
@@ -109,8 +121,8 @@ public partial class BoardView : UserControl
             {
                 TileControl tileControl = new()
                 {
-                    Width = _cellSize,
-                    Height = _cellSize,
+                    Width = _tileSize,
+                    Height = _tileSize,
                     Tile = tile,
                     Position = new Position(7 - row, column),
                     Board = this
@@ -127,6 +139,9 @@ public partial class BoardView : UserControl
         _boardBackground.Source = AssetManager.BoardBg.Value;
     }
 
+    /// <summary>
+    /// Removes all pieces from the board and adds them back in their initial positions.
+    /// </summary>
     private void InitializePieces()
     {
         _pieceSprites.Clear();
@@ -138,8 +153,8 @@ public partial class BoardView : UserControl
             var position = pieceOnBoard.Key;
             var pieceType = pieceOnBoard.Value;
 
-            var x = position.Column * _cellSize;
-            var y = position.Row * _cellSize;
+            var x = position.Column * _tileSize;
+            var y = position.Row * _tileSize;
 
             pieceSprite.Piece = pieceType;
             pieceSprite.SetValue(Canvas.LeftProperty, x);
@@ -152,6 +167,9 @@ public partial class BoardView : UserControl
         Log("Game is ready!");
     }
 
+    /// <summary>
+    /// Given a move, applies it to the board and animates the piece sprite
+    /// </summary>
     private void MovePieceSprites(Move move)
     {
         if (_pieceSprites.TryGetValue(move.From, out var pieceSprite))
@@ -159,8 +177,8 @@ public partial class BoardView : UserControl
             _pieceSprites.Remove(move.From);
             _pieceSprites.Add(move.To, pieceSprite);
 
-            var x = move.To.Column * _cellSize;
-            var y = move.To.Row * _cellSize;
+            var x = move.To.Column * _tileSize;
+            var y = move.To.Row * _tileSize;
 
             pieceSprite.SetValue(Canvas.LeftProperty, x);
             pieceSprite.SetValue(Canvas.BottomProperty, y);
@@ -171,6 +189,9 @@ public partial class BoardView : UserControl
         Log($"{move.Color} moved from {move.From.Index + 1} to {move.To.Index + 1}");
     }
 
+    /// <summary>
+    /// Updates the sprite of a piece that was promoted
+    /// </summary>
     private void UpdatePromotedSprite(Position pos)
     {
         if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
@@ -180,6 +201,9 @@ public partial class BoardView : UserControl
         }
     }
 
+    /// <summary>
+    /// Removes a captured piece from the board
+    /// </summary>
     private void RemoveCapturedPiece(Position pos)
     {
         if (_pieceSprites.TryGetValue(pos, out var pieceSprite))
@@ -191,6 +215,9 @@ public partial class BoardView : UserControl
         Log($"Piece at {pos.Index + 1} was captured");
     }
 
+    /// <summary>
+    /// Called when player clicks a tile
+    /// </summary>
     public void OnTilePressed(TileControl tile)
     {
         var pos = tile.Position!;
@@ -209,6 +236,9 @@ public partial class BoardView : UserControl
         }
     }
 
+    /// <summary>
+    /// Called when the game is finished
+    /// </summary>
     private void EndGame(Game.GameResult result)
     {
         Log("Game finished!");
@@ -221,6 +251,9 @@ public partial class BoardView : UserControl
         });
     }
 
+    /// <summary>
+    /// Restarts the game
+    /// </summary>
     private void NewGame(object sender, RoutedEventArgs e) =>
         Game = GameFactory.Create();
 }
