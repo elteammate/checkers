@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Checkers.Logic;
+using Checkers.Logic.AI;
 
 namespace Checkers.Views;
 
@@ -19,6 +22,8 @@ public partial class BoardView : UserControl
     private readonly double _tileSize;
 
     private Game _game;
+
+    private bool _whiteIsAi = true, _blackIsAi = true;
 
     /// <summary>
     /// A game being played on the board.
@@ -34,10 +39,13 @@ public partial class BoardView : UserControl
             _game.PieceCaptured += (_, pos) => RemoveCapturedPiece(pos);
             _game.PlayerTransition += (_, player) => Log($"{player}'s turn");
             _game.GameEnded += (_, result) => EndGame(result);
+            _game.MoveFinished += (_, _) => MakeAiMoveIfNeeded();
 
             SelectedTile = null;
             _logPanel.Children.Clear();
             InitializePieces();
+
+            MakeAiMoveIfNeeded();
         }
     }
 
@@ -211,6 +219,12 @@ public partial class BoardView : UserControl
     /// </summary>
     public void OnTilePressed(TileControl tile)
     {
+        if (_game.CurrentPlayer == Color.Black && _blackIsAi ||
+            _game.CurrentPlayer == Color.White && _whiteIsAi)
+        {
+            return;
+        }
+
         var pos = tile.Position!;
 
         if (Game.CurrentPlayer == Game.Board[pos.Index].GetColor() &&
@@ -247,4 +261,17 @@ public partial class BoardView : UserControl
     /// </summary>
     private void NewGame(object sender, RoutedEventArgs e) =>
         Game = GameFactory.Create();
+
+    private void MakeAiMoveIfNeeded()
+    {
+        if (!((_game.CurrentPlayer == Color.White && _whiteIsAi) ||
+              (_game.CurrentPlayer == Color.Black && _blackIsAi))) return;
+
+        Task.Run(() =>
+        {
+            var solver = new Solver(_game, _ => (float)new Random().NextDouble());
+            var move = solver.FindBestMove();
+            Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
+        });
+    }
 }

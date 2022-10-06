@@ -53,6 +53,7 @@ public class Game
     public event EventHandler<Position> PiecePromoted = delegate { };
     public event EventHandler<Color> PlayerTransition = delegate { };
     public event EventHandler<GameResult> GameEnded = delegate { };
+    public event EventHandler<Move> MoveFinished = delegate { };
 
     private void TryPromote(Position pos)
     {
@@ -89,6 +90,7 @@ public class Game
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
         {
             MoveFinder = currentPlayerMoveFinder;
+            MoveFinished(this, move);
         }
         else
         {
@@ -113,6 +115,7 @@ public class Game
             else
             {
                 PlayerTransition(this, CurrentPlayer);
+                MoveFinished(this, move);
             }
         }
     }
