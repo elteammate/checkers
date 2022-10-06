@@ -65,22 +65,23 @@ public class Solver
 
     public Move FindBestMove()
     {
-        Tuple<float, Move?> Minimax(int depthLeft, GameState state, float alpha, float beta)
+        float Minimax(int depthLeft, GameState state, float alpha, float beta, out Move? bestMove)
         {
+            bestMove = null;
+
             if (depthLeft == 0)
-                return new Tuple<float, Move?>(_heuristic(state.Board), null);
+                return _heuristic(state.Board);
 
             var moves = state.GetMoves();
             if (moves.Count == 0)
-                return new Tuple<float, Move?>(_heuristic(state.Board), null);
+                return _heuristic(state.Board);
 
-            var bestMove = moves[0];
             var bestScore = state.Player == Color.White ? float.MinValue : float.MaxValue;
 
             foreach (var move in moves)
             {
                 var newState = state.MakeMove(move);
-                var score = Minimax(depthLeft - 1, newState, alpha, beta).Item1;
+                var score = Minimax(depthLeft - 1, newState, alpha, beta, out _);
 
                 if (state.Player == Color.White)
                 {
@@ -107,9 +108,10 @@ public class Solver
                     break;
             }
 
-            return new Tuple<float, Move?>(bestScore, bestMove);
+            return bestScore;
         }
 
-        return Minimax(Depth, _state, float.MinValue, float.MaxValue).Item2!;
+        Minimax(Depth, _state, float.MinValue, float.MaxValue, out var move);
+        return (Move)move!;
     }
 }
