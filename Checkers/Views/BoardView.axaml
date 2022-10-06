@@ -16,18 +16,26 @@
         </Viewbox>
         <Grid Grid.Column="1" RowDefinitions="Auto,*">
             <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
-                <Button Grid.Row="0" Grid.Column="0" Width="200" Click="NewGame">
+                <Button Grid.Row="0" Grid.Column="0" Width="200"
+                        Click="NewGamePlayerVsPlayer_OnClick"
+                        Name="NewGamePlayerVsPlayer">
                     <TextBlock
                         Text="Player vs Player"
                         HorizontalAlignment="Center"/>
                 </Button>
-                <Button Grid.Row="0" Grid.Column="1" Width="200">
+                <Button Grid.Row="0" Grid.Column="1" Width="200"
+                        Click="NewGamePlayerVsAi_OnClick"
+                        Name="NewGamePlayerVsAi">
                     <TextBlock Text="Player vs AI" HorizontalAlignment="Center"/>
                 </Button>
-                <Button Grid.Row="1" Grid.Column="0" Width="200">
+                <Button Grid.Row="1" Grid.Column="0" Width="200"
+                        Click="NewGameAiVsPlayer_OnClick"
+                        Name="NewGameAiVsPlayer">
                     <TextBlock Text="AI vs Player" HorizontalAlignment="Center"/>
                 </Button>
-                <Button Grid.Row="1" Grid.Column="1" Width="200">
+                <Button Grid.Row="1" Grid.Column="1" Width="200"
+                        Click="NewGameAiVsAi_OnClick"
+                        Name="NewGameAiVsAi">
                     <TextBlock Text="AI vs AI" HorizontalAlignment="Center"/>
                 </Button>
             </Grid>

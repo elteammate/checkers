@@ -23,7 +23,7 @@ public partial class BoardView : UserControl
 
     private Game _game = null!;
 
-    private bool _whiteIsAi = true, _blackIsAi = true;
+    private bool _whiteIsAi, _blackIsAi;
 
     /// <summary>
     /// A game being played on the board.
@@ -258,8 +258,12 @@ public partial class BoardView : UserControl
     /// <summary>
     /// Restarts the game
     /// </summary>
-    private void NewGame(object sender, RoutedEventArgs e) =>
+    private void NewGame(bool isWhiteAi, bool isBlackAi)
+    {
+        _whiteIsAi = isWhiteAi;
+        _blackIsAi = isBlackAi;
         Game = GameFactory.Create();
+    }
 
     private void MakeAiMoveIfNeeded()
     {
@@ -273,4 +277,16 @@ public partial class BoardView : UserControl
             Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
         });
     }
+
+    private void NewGamePlayerVsPlayer_OnClick(object sender, RoutedEventArgs e) =>
+        NewGame(false, false);
+
+    private void NewGamePlayerVsAi_OnClick(object sender, RoutedEventArgs e) =>
+        NewGame(false, true);
+
+    private void NewGameAiVsPlayer_OnClick(object sender, RoutedEventArgs e) =>
+        NewGame(true, false);
+
+    private void NewGameAiVsAi_OnClick(object sender, RoutedEventArgs e) =>
+        NewGame(true, true);
 }

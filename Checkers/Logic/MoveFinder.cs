@@ -92,7 +92,7 @@ public class MoveFinder
         var optionLeft = TryGetPosition(pos.Row + 1, pos.Column - 1);
         var optionRight = TryGetPosition(pos.Row + 1, pos.Column + 1);
 
-        var result = new List<Move>();
+        var result = new List<Move>(16);
         if (IsEmpty(optionLeft))
             result.Add(GetMove(pos, optionLeft!.Value, null));
         if (IsEmpty(optionRight))
@@ -106,7 +106,7 @@ public class MoveFinder
     /// </summary>
     private List<Move> GetForcedMovesOfPiece(RelativePosition pos)
     {
-        var result = new List<Move>();
+        var result = new List<Move>(4);
 
         var optionLeft = TryGetPosition(pos.Row + 2, pos.Column - 2);
         var jumpedLeft = TryGetPosition(pos.Row + 1, pos.Column - 1);
