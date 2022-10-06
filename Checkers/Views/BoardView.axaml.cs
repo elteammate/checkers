@@ -31,7 +31,10 @@ public partial class BoardView : UserControl
             _game.PieceCaptured += (_, pos) => RemoveCapturedPiece(pos);
             _game.PlayerTransition += (_, player) => Log($"{player}'s turn");
             _game.GameEnded += (_, result) => EndGame(result);
+
             SelectedTile = null;
+            _logPanel.Children.Clear();
+            InitializePieces();
         }
     }
 
@@ -52,16 +55,6 @@ public partial class BoardView : UserControl
 
     public BoardView()
     {
-        Game = GameFactory.Create(Color.White,
-            "/ / / / ",
-            " / / / /",
-            "/ /w/ / ",
-            " / / / /",
-            "/ / / / ",
-            " / / /b/",
-            "/ / / / ",
-            " / / / /");
-
         AvaloniaXamlLoader.Load(this);
 
         _boardGrid = this.FindControl<Grid>(nameof(BoardGrid))!;
@@ -73,7 +66,8 @@ public partial class BoardView : UserControl
         _cellSize = _boardGrid.Width / Game.BoardWidth;
 
         InitializeBoard();
-        InitializePieces();
+
+        Game = GameFactory.Create();
     }
 
     private void Log(string message) =>
@@ -227,10 +221,6 @@ public partial class BoardView : UserControl
         });
     }
 
-    private void NewGame(object sender, RoutedEventArgs e)
-    {
+    private void NewGame(object sender, RoutedEventArgs e) =>
         Game = GameFactory.Create();
-        _logPanel.Children.Clear();
-        InitializePieces();
-    }
 }
