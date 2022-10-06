@@ -12,15 +12,6 @@ namespace Checkers.Logic;
 /// </summary>
 public class MoveFinder
 {
-    public enum RelativePiece : sbyte
-    {
-        Empty = 0,
-        Friendly = 1,
-        Enemy = -1,
-        FriendlyKing = 2,
-        EnemyKing = -2
-    }
-
     private readonly Color _currentPlayer;
 
     /// <summary>
@@ -46,26 +37,7 @@ public class MoveFinder
                     null)
             };
 
-            if (currentPlayer == Color.White)
-                RelativeBoard[index] = piece switch
-                {
-                    Piece.Empty => RelativePiece.Empty,
-                    Piece.White => RelativePiece.Friendly,
-                    Piece.WhiteKing => RelativePiece.FriendlyKing,
-                    Piece.Black => RelativePiece.Enemy,
-                    Piece.BlackKing => RelativePiece.EnemyKing,
-                    _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
-                };
-            else
-                RelativeBoard[index] = piece switch
-                {
-                    Piece.Empty => RelativePiece.Empty,
-                    Piece.White => RelativePiece.Enemy,
-                    Piece.WhiteKing => RelativePiece.EnemyKing,
-                    Piece.Black => RelativePiece.Friendly,
-                    Piece.BlackKing => RelativePiece.FriendlyKing,
-                    _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
-                };
+            RelativeBoard[index] = piece.ToRelative(currentPlayer);
         }
     }
 

@@ -9,9 +9,9 @@ public class RelativeBoardTest
     public void MoveFinderBoard_WhenInitialized_ShouldHaveCorrectNumberOfPieces()
     {
         var board = GameFactory.Create().MoveFinder.RelativeBoard;
-        var friendly = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Friendly).Length;
-        var enemy = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Enemy).Length;
-        var empty = Array.FindAll(board, x => x == MoveFinder.RelativePiece.Empty).Length;
+        var friendly = Array.FindAll(board, x => x == RelativePiece.Friendly).Length;
+        var enemy = Array.FindAll(board, x => x == RelativePiece.Enemy).Length;
+        var empty = Array.FindAll(board, x => x == RelativePiece.Empty).Length;
         Assert.AreEqual(12, friendly);
         Assert.AreEqual(12, enemy);
         Assert.AreEqual(8, empty);
@@ -32,22 +32,22 @@ public class RelativeBoardTest
 
         Assert.AreEqual(new[]
         {
-            MoveFinder.RelativePiece.Friendly, MoveFinder.RelativePiece.EnemyKing,
-            MoveFinder.RelativePiece.Friendly, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Enemy,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.EnemyKing,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.FriendlyKing,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.EnemyKing, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.EnemyKing, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.FriendlyKing, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Enemy,
-            MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty
+            RelativePiece.Friendly, RelativePiece.EnemyKing,
+            RelativePiece.Friendly, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Enemy,
+            RelativePiece.Empty, RelativePiece.EnemyKing,
+            RelativePiece.Empty, RelativePiece.FriendlyKing,
+            RelativePiece.Empty, RelativePiece.Empty,
+            RelativePiece.Enemy, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Friendly,
+            RelativePiece.EnemyKing, RelativePiece.Friendly,
+            RelativePiece.Empty, RelativePiece.Empty,
+            RelativePiece.EnemyKing, RelativePiece.Empty,
+            RelativePiece.FriendlyKing, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Enemy,
+            RelativePiece.Enemy, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Friendly,
+            RelativePiece.Empty, RelativePiece.Empty
         }, board);
     }
 
@@ -66,22 +66,22 @@ public class RelativeBoardTest
 
         Assert.AreEqual(new[]
         {
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.Friendly, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.EnemyKing,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.FriendlyKing,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.FriendlyKing,
-            MoveFinder.RelativePiece.Enemy, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Friendly,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.EnemyKing, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.FriendlyKing, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Friendly, MoveFinder.RelativePiece.Empty,
-            MoveFinder.RelativePiece.Empty, MoveFinder.RelativePiece.Enemy,
-            MoveFinder.RelativePiece.FriendlyKing, MoveFinder.RelativePiece.Enemy
+            RelativePiece.Empty, RelativePiece.Empty,
+            RelativePiece.Enemy, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Friendly,
+            RelativePiece.Friendly, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.EnemyKing,
+            RelativePiece.Empty, RelativePiece.FriendlyKing,
+            RelativePiece.Empty, RelativePiece.Empty,
+            RelativePiece.Enemy, RelativePiece.FriendlyKing,
+            RelativePiece.Enemy, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Friendly,
+            RelativePiece.Empty, RelativePiece.Empty,
+            RelativePiece.EnemyKing, RelativePiece.Empty,
+            RelativePiece.FriendlyKing, RelativePiece.Empty,
+            RelativePiece.Friendly, RelativePiece.Empty,
+            RelativePiece.Empty, RelativePiece.Enemy,
+            RelativePiece.FriendlyKing, RelativePiece.Enemy
         }, board);
     }
 }

@@ -47,4 +47,68 @@ public static class PieceExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
         };
     }
+
+    public static RelativePiece ToRelative(this Piece piece, Color color)
+    {
+        if (color == Color.White)
+        {
+            return piece switch
+            {
+                Piece.Empty => RelativePiece.Empty,
+                Piece.White => RelativePiece.Friendly,
+                Piece.Black => RelativePiece.Enemy,
+                Piece.WhiteKing => RelativePiece.FriendlyKing,
+                Piece.BlackKing => RelativePiece.EnemyKing,
+                _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
+            };
+        }
+
+        return piece switch
+        {
+            Piece.Empty => RelativePiece.Empty,
+            Piece.White => RelativePiece.Enemy,
+            Piece.Black => RelativePiece.Friendly,
+            Piece.WhiteKing => RelativePiece.EnemyKing,
+            Piece.BlackKing => RelativePiece.FriendlyKing,
+            _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
+        };
+    }
+}
+
+public enum RelativePiece : sbyte
+{
+    Empty = 0,
+    Friendly = 1,
+    Enemy = -1,
+    FriendlyKing = 2,
+    EnemyKing = -2
+}
+
+public static class RelativePieceExtensions
+{
+    public static Piece ToAbsolute(this RelativePiece piece, Color color)
+    {
+        if (color == Color.White)
+        {
+            return piece switch
+            {
+                RelativePiece.Empty => Piece.Empty,
+                RelativePiece.Friendly => Piece.White,
+                RelativePiece.Enemy => Piece.Black,
+                RelativePiece.FriendlyKing => Piece.WhiteKing,
+                RelativePiece.EnemyKing => Piece.BlackKing,
+                _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
+            };
+        }
+
+        return piece switch
+        {
+            RelativePiece.Empty => Piece.Empty,
+            RelativePiece.Friendly => Piece.Black,
+            RelativePiece.Enemy => Piece.White,
+            RelativePiece.FriendlyKing => Piece.BlackKing,
+            RelativePiece.EnemyKing => Piece.WhiteKing,
+            _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
+        };
+    }
 }
