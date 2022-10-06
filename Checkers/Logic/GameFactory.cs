@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Checkers.Logic;
@@ -9,7 +8,7 @@ namespace Checkers.Logic;
 /// </summary>
 public static class GameFactory
 {
-    private static ImmutableArray<Piece> InitialBoard => BoardFromNotation(
+    private static Piece[] InitialBoard => BoardFromNotation(
         "/b/b/b/b",
         "b/b/b/b/",
         "/b/b/b/b",
@@ -18,7 +17,7 @@ public static class GameFactory
         "w/w/w/w/",
         "/w/w/w/w",
         "w/w/w/w/"
-    ).ToImmutableArray();
+    ).ToArray();
 
     /// <summary>
     ///     Creates a new board with the initial setup.

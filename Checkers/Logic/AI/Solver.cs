@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Checkers.Logic.AI;
 
-using HeuristicFunction = Func<Piece[], float>;
+using HeuristicFunction = Func<Piece[], double>;
 
 public class Solver
 {
@@ -65,7 +65,8 @@ public class Solver
 
     public Move FindBestMove()
     {
-        float Minimax(int depthLeft, GameState state, float alpha, float beta, out Move? bestMove)
+        double Minimax(int depthLeft, GameState state, double alpha, double beta,
+            out Move? bestMove)
         {
             bestMove = null;
 
@@ -76,7 +77,7 @@ public class Solver
             if (moves.Count == 0)
                 return _heuristic(state.Board);
 
-            var bestScore = state.Player == Color.White ? float.MinValue : float.MaxValue;
+            var bestScore = state.Player == Color.White ? double.MinValue : double.MaxValue;
 
             foreach (var move in moves)
             {
@@ -111,7 +112,7 @@ public class Solver
             return bestScore;
         }
 
-        Minimax(Depth, _state, float.MinValue, float.MaxValue, out var foundMove);
+        Minimax(Depth, _state, double.MinValue, double.MaxValue, out var foundMove);
         return (Move)foundMove!;
     }
 }

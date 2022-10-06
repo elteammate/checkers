@@ -265,6 +265,8 @@ public partial class BoardView : UserControl
         Game = GameFactory.Create();
     }
 
+    private static NeuralNetwork _network = new();
+
     private void MakeAiMoveIfNeeded()
     {
         if (!((_game.CurrentPlayer == Color.White && _whiteIsAi) ||
@@ -272,7 +274,7 @@ public partial class BoardView : UserControl
 
         Task.Run(() =>
         {
-            var solver = new Solver(_game, _ => (float)new Random().NextDouble());
+            var solver = new Solver(_game, _network.GetEvaluator());
             var move = solver.FindBestMove();
             Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
         });
