@@ -19,12 +19,12 @@ public class MoveFinder
     /// </summary>
     public readonly RelativePiece[] RelativeBoard;
 
-    public readonly Position? ForcedChainPiece;
+    private readonly Position? _forcedChainPiece;
 
     public MoveFinder(Color currentPlayer, Piece[] board, Position? forcedChainPiece = null)
     {
         _currentPlayer = currentPlayer;
-        ForcedChainPiece = forcedChainPiece;
+        _forcedChainPiece = forcedChainPiece;
 
         RelativeBoard = new RelativePiece[Game.PlayableTiles];
         for (var index = 0; index < Game.PlayableTiles; index++)
@@ -56,7 +56,7 @@ public class MoveFinder
     {
         var from = Transform(relFrom);
         var to = Transform(relTo);
-        var jumped = relJumped == null ? null : Transform(relJumped);
+        var jumped = relJumped.HasValue ? (Position?)Transform(relJumped.Value) : null;
         return new Move(_currentPlayer, from, to, jumped);
     }
 
@@ -73,15 +73,15 @@ public class MoveFinder
     }
 
     private bool IsEmpty(RelativePosition? position) =>
-        position != null && RelativeBoard[position.Index] == RelativePiece.Empty;
+        position != null && RelativeBoard[position.Value.Index] == RelativePiece.Empty;
 
     private bool IsFriend(RelativePosition? position) =>
         position != null &&
-        RelativeBoard[position.Index] is RelativePiece.Friendly or RelativePiece.FriendlyKing;
+        RelativeBoard[position.Value.Index] is RelativePiece.Friendly or RelativePiece.FriendlyKing;
 
     private bool IsEnemy(RelativePosition? position) =>
         position != null &&
-        RelativeBoard[position.Index] is RelativePiece.Enemy or RelativePiece.EnemyKing;
+        RelativeBoard[position.Value.Index] is RelativePiece.Enemy or RelativePiece.EnemyKing;
 
     /// <summary>
     ///     Returns a list of available non-forced moves for a given piece.
@@ -94,9 +94,9 @@ public class MoveFinder
 
         var result = new List<Move>();
         if (IsEmpty(optionLeft))
-            result.Add(GetMove(pos, optionLeft!, null));
+            result.Add(GetMove(pos, optionLeft!.Value, null));
         if (IsEmpty(optionRight))
-            result.Add(GetMove(pos, optionRight!, null));
+            result.Add(GetMove(pos, optionRight!.Value, null));
         return result;
     }
 
@@ -111,22 +111,22 @@ public class MoveFinder
         var optionLeft = TryGetPosition(pos.Row + 2, pos.Column - 2);
         var jumpedLeft = TryGetPosition(pos.Row + 1, pos.Column - 1);
         if (IsEmpty(optionLeft) && IsEnemy(jumpedLeft))
-            result.Add(GetMove(pos, optionLeft!, jumpedLeft));
+            result.Add(GetMove(pos, optionLeft!.Value, jumpedLeft));
 
         var optionRight = TryGetPosition(pos.Row + 2, pos.Column + 2);
         var jumpedRight = TryGetPosition(pos.Row + 1, pos.Column + 1);
         if (IsEmpty(optionRight) && IsEnemy(jumpedRight))
-            result.Add(GetMove(pos, optionRight!, jumpedRight));
+            result.Add(GetMove(pos, optionRight!.Value, jumpedRight));
 
         var optionBackLeft = TryGetPosition(pos.Row - 2, pos.Column - 2);
         var jumpedBackLeft = TryGetPosition(pos.Row - 1, pos.Column - 1);
         if (IsEmpty(optionBackLeft) && IsEnemy(jumpedBackLeft))
-            result.Add(GetMove(pos, optionBackLeft!, jumpedBackLeft));
+            result.Add(GetMove(pos, optionBackLeft!.Value, jumpedBackLeft));
 
         var optionBackRight = TryGetPosition(pos.Row - 2, pos.Column + 2);
         var jumpedBackRight = TryGetPosition(pos.Row - 1, pos.Column + 1);
         if (IsEmpty(optionBackRight) && IsEnemy(jumpedBackRight))
-            result.Add(GetMove(pos, optionBackRight!, jumpedBackRight));
+            result.Add(GetMove(pos, optionBackRight!.Value, jumpedBackRight));
 
 
         return result;
@@ -144,7 +144,7 @@ public class MoveFinder
         {
             var pos = TryGetPosition(row, col);
             var isFree = IsEmpty(pos);
-            if (isFree) result.Add(GetMove(relativePosition, pos!, null));
+            if (isFree) result.Add(GetMove(relativePosition, pos!.Value, null));
             return isFree;
         }
 
@@ -184,10 +184,10 @@ public class MoveFinder
                 if (pos == null || IsFriend(pos)) break;
                 if (IsEmpty(pos)) continue;
 
-                var jump = TryGetPosition(pos.Row + yDir, pos.Column + xDir);
+                var jump = TryGetPosition(pos.Value.Row + yDir, pos.Value.Column + xDir);
 
                 if (IsEnemy(pos) && IsEmpty(jump))
-                    result.Add(GetMove(relativePosition, jump!, pos));
+                    result.Add(GetMove(relativePosition, jump!.Value, pos));
                 break;
             }
         }
@@ -238,8 +238,8 @@ public class MoveFinder
         };
     }
 
-    private List<Move>? _movesCache = null;
-    private List<Move>? _forcedMovesCache = null;
+    private List<Move>? _movesCache;
+    private List<Move>? _forcedMovesCache;
 
     /// <summary>
     ///     Returns a list of all available moves.
@@ -250,9 +250,9 @@ public class MoveFinder
         if (forced && _forcedMovesCache != null) return _forcedMovesCache;
         if (!forced && _movesCache != null) return _movesCache;
 
-        if (ForcedChainPiece != null && forced)
+        if (_forcedChainPiece != null && forced)
         {
-            _forcedMovesCache = GetForcedMovesFrom(ForcedChainPiece!);
+            _forcedMovesCache = GetForcedMovesFrom(_forcedChainPiece!.Value);
             return _forcedMovesCache;
         }
 

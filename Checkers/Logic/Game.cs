@@ -79,8 +79,8 @@ public class Game
 
         if (move.Jumped != null)
         {
-            _board[move.Jumped.Index] = Piece.Empty;
-            PieceCaptured(this, move.Jumped);
+            _board[move.Jumped!.Value.Index] = Piece.Empty;
+            PieceCaptured(this, move.Jumped.Value);
         }
 
         MoveMade(this, move);

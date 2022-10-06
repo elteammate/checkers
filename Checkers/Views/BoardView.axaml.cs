@@ -21,7 +21,7 @@ public partial class BoardView : UserControl
     private readonly Panel _logPanel;
     private readonly double _tileSize;
 
-    private Game _game;
+    private Game _game = null!;
 
     private bool _whiteIsAi = true, _blackIsAi = true;
 
@@ -131,7 +131,6 @@ public partial class BoardView : UserControl
                 {
                     Width = _tileSize,
                     Height = _tileSize,
-                    Tile = tile,
                     Position = new Position(7 - row, column),
                     Board = this
                 };
@@ -225,7 +224,7 @@ public partial class BoardView : UserControl
             return;
         }
 
-        var pos = tile.Position!;
+        var pos = tile.Position;
 
         if (Game.CurrentPlayer == Game.Board[pos.Index].GetColor() &&
             Game.MoveFinder.GetMoves().FirstOrDefault(move => move.From == pos) != null)

@@ -20,7 +20,7 @@ namespace Checkers.Logic;
 ///  >   0    28 __ 29 __ 30 __ 31 __
 /// </code>
 /// </summary>
-public class Position
+public readonly struct Position
 {
     public Position(int index)
     {
@@ -66,7 +66,7 @@ public class Position
 ///     current player is white and the bottom right corner if current player
 ///     is black.
 /// </summary>
-public class RelativePosition
+public readonly struct RelativePosition
 {
     private readonly Position _position;
 

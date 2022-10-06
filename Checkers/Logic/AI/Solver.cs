@@ -15,10 +15,10 @@ public class Solver
     private record GameState
     {
         public Color Player;
-        public Piece[] Board;
-        public Position? ForcedChainPiece;
+        public Piece[] Board = null!;
+        private Position? _forcedChainPiece;
 
-        public List<Move> GetMoves() => new MoveFinder(Player, Board, ForcedChainPiece).GetMoves();
+        public List<Move> GetMoves() => new MoveFinder(Player, Board, _forcedChainPiece).GetMoves();
 
         public GameState MakeMove(Move move)
         {
@@ -33,7 +33,7 @@ public class Solver
                     Player = Player.Opposite(),
                 };
 
-            newBoard[move.Jumped.Index] = Piece.Empty;
+            newBoard[move.Jumped.Value.Index] = Piece.Empty;
             var newMoveFinder = new MoveFinder(Player, newBoard, move.To);
             if (newMoveFinder.GetForcedMoves().Count > 0)
             {
@@ -41,7 +41,7 @@ public class Solver
                 {
                     Player = Player,
                     Board = newBoard,
-                    ForcedChainPiece = move.To
+                    _forcedChainPiece = move.To
                 };
             }
 
@@ -111,7 +111,7 @@ public class Solver
             return bestScore;
         }
 
-        Minimax(Depth, _state, float.MinValue, float.MaxValue, out var move);
-        return (Move)move!;
+        Minimax(Depth, _state, float.MinValue, float.MaxValue, out var foundMove);
+        return (Move)foundMove!;
     }
 }
