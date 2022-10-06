@@ -6,6 +6,11 @@ using Checkers.Logic;
 
 namespace Checkers.Views;
 
+/// <summary>
+/// This control represents the piece on the board.
+/// It does not handle any logic.
+/// This sprite should be placed on a canvas.
+/// </summary>
 public partial class PieceSprite : UserControl
 {
     private const string CapturedClass = "Captured";
@@ -17,6 +22,10 @@ public partial class PieceSprite : UserControl
         _sprite = this.FindControl<Image>("Sprite")!;
     }
 
+    /// <summary>
+    /// A piece that this sprite represents.
+    /// Updates the sprite when the piece changes.
+    /// </summary>
     public Piece Piece
     {
         set

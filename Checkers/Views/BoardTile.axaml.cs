@@ -7,6 +7,10 @@ using Color = Checkers.Logic.Color;
 
 namespace Checkers.Views;
 
+/// <summary>
+/// Represents a single square on the board.
+/// This control is not used to handle user input.
+/// </summary>
 public partial class BoardTile : UserControl
 {
     private static readonly Brush WhiteBrush = new SolidColorBrush(Colors.White);
