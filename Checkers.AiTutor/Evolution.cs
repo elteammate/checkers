@@ -97,6 +97,7 @@ public static class Evolution
                     }
 
                     if (Interlocked.Decrement(ref waitingForGames) == 0)
+                        // ReSharper disable once AccessToDisposedClosure
                         resetEvent.Set();
                 });
             }

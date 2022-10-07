@@ -14,7 +14,6 @@ namespace Checkers.Views;
 
 public partial class BoardView : UserControl
 {
-    private static NeuralNetwork _network = new();
     private readonly Image _boardBackground;
     private readonly Canvas _boardCanvas;
     private readonly Grid _boardGrid;
