@@ -268,13 +268,20 @@ public partial class BoardView : UserControl
         if (!((_game.CurrentPlayer == Color.White && _whiteIsAi) ||
               (_game.CurrentPlayer == Color.Black && _blackIsAi))) return;
 
+        var game = _game;
         Task.Run(() =>
         {
             var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
             var network = AssetManager.NeuralNetworks.Value[networkId];
-            var solver = new Solver(_game, network.GetEvaluator(), 7);
+            var solver = new Solver(game, network.GetEvaluator(), 5);
             var move = solver.FindBestMove();
-            Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (game == _game)
+                {
+                    game.MakeMove(move);
+                }
+            });
         });
     }
 

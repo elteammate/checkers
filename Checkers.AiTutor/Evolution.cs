@@ -11,6 +11,7 @@ public static class Evolution
 {
     private const int PopulationSize = 30;
     private const int GamesPerIndividual = 10;
+    private const int ReinforcementGamesPerIndividual = 4;
 
     private const string LastGenerationNumberPath = "data/last-generation-number.txt";
 
@@ -23,7 +24,7 @@ public static class Evolution
         {
             Console.WriteLine($"Generation {generation}");
 
-            population = Generation(population);
+            population = Generation(population, generation);
 
             SavePopulation(population, generation);
             for (var i = 0; i < PopulationSize; i++)
@@ -53,30 +54,46 @@ public static class Evolution
         }
     }
 
-    private static List<NeuralNetwork> Generation(IReadOnlyList<NeuralNetwork> population)
+    private static List<NeuralNetwork> Generation(IReadOnlyList<NeuralNetwork> population, int gen)
     {
         var random = new Random();
         var score = new int[PopulationSize];
 
-        var waitingForGames = PopulationSize * GamesPerIndividual;
-
+        var totalGamesPerIndividual =
+            GamesPerIndividual + (gen > 10 ? ReinforcementGamesPerIndividual : 0);
+        var waitingForGames = PopulationSize * totalGamesPerIndividual;
         var progressBar = new ProgressBar(waitingForGames, "Playing games...");
 
         using (var resetEvent = new ManualResetEvent(false))
         {
             for (var player = 0; player < PopulationSize; player++)
-            for (var gameNumber = 0; gameNumber < GamesPerIndividual; gameNumber++)
+            for (var gameNumber = 0;
+                 gameNumber < totalGamesPerIndividual;
+                 gameNumber++)
             {
                 var currentPlayer = player;
+                var number = gameNumber;
 
                 ThreadPool.QueueUserWorkItem(_ =>
                 {
-                    var opponent = random.Next(PopulationSize - 1);
-                    if (opponent >= currentPlayer)
-                        opponent++;
+                    NeuralNetwork player1, player2;
+                    int? opponent = null;
 
-                    var player1 = population[currentPlayer];
-                    var player2 = population[opponent];
+                    if (number < GamesPerIndividual)
+                    {
+                        opponent = random.Next(PopulationSize - 1);
+                        if (opponent >= currentPlayer)
+                            opponent++;
+                        player1 = population[currentPlayer];
+                        player2 = population[opponent!.Value];
+                    }
+                    else
+                    {
+                        player1 = population[currentPlayer];
+                        player2 = LoadFromPopulation(
+                            random.Next(gen / 2),
+                            random.Next(PopulationSize));
+                    }
 
                     var result = Play(player1, player2);
 
@@ -85,11 +102,11 @@ public static class Evolution
                         if (result == Game.GameResult.WhiteWins)
                         {
                             score[currentPlayer] += 1;
-                            score[opponent] -= 2;
+                            if (opponent.HasValue) score[opponent.Value] -= 2;
                         }
                         else if (result == Game.GameResult.BlackWins)
                         {
-                            score[opponent] += 1;
+                            if (opponent.HasValue) score[opponent.Value] += 1;
                             score[currentPlayer] -= 2;
                         }
 
@@ -111,17 +128,45 @@ public static class Evolution
             .Zip(score, (network, s) => (network, s))
             .OrderByDescending(x => x.s)
             .Take(PopulationSize / 2)
-            .Select(x => x.network)
-            .ToList();
+            .ToArray();
 
-        var newPopulation = new List<NeuralNetwork>();
-        foreach (var parent in bestHalf)
+        for (var i = 0; i < PopulationSize / 2; i++)
         {
-            newPopulation.Add(parent);
-            newPopulation.Add(parent.Mutate());
+            bestHalf[i].s -= bestHalf[^1].s;
         }
 
-        return newPopulation;
+        var newGen = bestHalf.Select(x => x.network).ToList();
+        for (var i = 0; i < PopulationSize / 2; i++)
+        {
+            var parent1 =
+                bestHalf[RandomWeightedIndex(random, bestHalf.Select(x => x.s).ToArray())].network;
+            var parent2 =
+                bestHalf[RandomWeightedIndex(random, bestHalf.Select(x => x.s).ToArray())].network;
+            newGen.Add(NeuralNetwork.Crossover(parent1, parent2));
+        }
+
+        for (var mutation = 0; mutation < 10; mutation++)
+        {
+            var index = random.Next(PopulationSize);
+            newGen[index] = newGen[index].Mutate();
+        }
+
+        return newGen;
+    }
+
+    private static int RandomWeightedIndex(Random random, int[] weights)
+    {
+        var total = weights.Sum();
+        var r = random.Next(total);
+        var sum = 0;
+        for (var i = 0; i < weights.Length; i++)
+        {
+            sum += weights[i];
+            if (sum > r)
+                return i;
+        }
+
+        throw new Exception("Should not happen");
     }
 
     private static Game.GameResult Play(
@@ -135,7 +180,7 @@ public static class Evolution
         while (game.Result == Game.GameResult.None && moveCount < 100)
         {
             var heuristic = game.CurrentPlayer == Color.White ? white : black;
-            var move = new Solver(game, heuristic.GetEvaluator(), 3).FindBestMove();
+            var move = new Solver(game, heuristic.GetEvaluator(), 4).FindBestMove();
 
             game.MakeMove(move);
             moveCount++;
@@ -164,12 +209,12 @@ public static class Evolution
 
     private static void SavePopulation(IReadOnlyList<NeuralNetwork> population, int generation)
     {
-        for (var i = 0; i < population.Count; i++)
+        for (var id = 0; id < population.Count; id++)
         {
             var path = $"data/history/gen-{generation}";
             Directory.CreateDirectory(path);
-            population[i].Save(path + "/{i}.json");
-            File.Copy(path + "/{i}.json", $"../Checkers/Assets/networks/{i}.json", true);
+            population[id].Save(path + $"/{id}.json");
+            File.Copy(path + $"/{id}.json", $"../Checkers/Assets/networks/{id}.json", true);
         }
     }
 

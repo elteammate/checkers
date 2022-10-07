@@ -108,6 +108,93 @@ public class NeuralNetwork
         };
     }
 
+    public static NeuralNetwork[] MutatePopulation(NeuralNetwork[] population)
+    {
+        var normal = new Normal(0, 1);
+
+        var newPopulation = new NeuralNetwork[population.Length * 2];
+
+        var sigmaRandom = new DenseMatrix[Layers.Length - 1];
+        for (var i = 0; i < population[0]._weights.Length; i++)
+        {
+            sigmaRandom[i] = DenseMatrix.CreateRandom(
+                population[0]._weights[i].RowCount,
+                population[0]._weights[i].ColumnCount,
+                normal);
+        }
+
+        for (var populationIndex = 0; populationIndex < population.Length; populationIndex++)
+        {
+            var nn = population[populationIndex];
+            newPopulation[populationIndex] = population[populationIndex];
+
+            var newSigma = new Layer[nn._sigma.Length];
+            var newWeights = new Layer[nn._weights.Length];
+
+            for (var i = 0; i < nn._weights.Length; i++)
+            {
+                newSigma[i] = nn._sigma[i].PointwiseMultiply((sigmaRandom[i] * Tau).PointwiseExp());
+
+                var weightRandom = DenseMatrix.CreateRandom(
+                    nn._weights[i].RowCount,
+                    nn._weights[i].ColumnCount,
+                    normal);
+
+                newWeights[i] = nn._weights[i] + newSigma[i].PointwiseMultiply(weightRandom);
+            }
+
+            var newK = nn._k * Math.Exp(1 / Math.Sqrt(2) * normal.Sample());
+            if (newK < 1.2) newK = 1.2;
+            if (newK > 3) newK = 3;
+
+            newPopulation[populationIndex + population.Length] = new NeuralNetwork
+            {
+                _sigma = newSigma,
+                _weights = newWeights,
+                _k = newK
+            };
+        }
+
+        return newPopulation;
+    }
+
+    public static NeuralNetwork Crossover(NeuralNetwork nn1, NeuralNetwork nn2)
+    {
+        var random = new Random();
+        var newK = random.Next(2) == 0 ? nn1._k : nn2._k;
+        var newSigma = new Layer[nn1._sigma.Length];
+        var newWeights = new Layer[nn1._weights.Length];
+
+        for (var i = 0; i < nn1._weights.Length; i++)
+        {
+            newSigma[i] = nn1._sigma[i];
+            newWeights[i] = nn1._weights[i];
+            for (var j = 0; j < nn1._weights[i].RowCount; j++)
+            {
+                for (var k = 0; k < nn1._weights[i].ColumnCount; k++)
+                {
+                    if (random.Next(2) == 0)
+                    {
+                        newSigma[i][j, k] = nn1._sigma[i][j, k];
+                        newWeights[i][j, k] = nn1._weights[i][j, k];
+                    }
+                    else
+                    {
+                        newSigma[i][j, k] = nn2._sigma[i][j, k];
+                        newWeights[i][j, k] = nn2._weights[i][j, k];
+                    }
+                }
+            }
+        }
+
+        return new NeuralNetwork
+        {
+            _sigma = newSigma,
+            _weights = newWeights,
+            _k = newK
+        };
+    }
+
     /// <summary>
     ///     Runs the network on the given board.
     /// </summary>
