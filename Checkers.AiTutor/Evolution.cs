@@ -18,7 +18,7 @@ public static class Evolution
             population.Add(LoadOrCreate(i));
         }
 
-        for (var generation = LoadLastGenerationNumber(); generation < 300; generation++)
+        for (var generation = LoadLastGenerationNumber(); generation < 1000; generation++)
         {
             Console.WriteLine($"Generation {generation}");
 
@@ -166,8 +166,10 @@ public static class Evolution
     {
         for (var i = 0; i < population.Count; i++)
         {
-            Directory.CreateDirectory($"data/history/gen-{generation}");
-            population[i].Save($"data/history/gen-{generation}/{i}.json");
+            var path = $"data/history/gen-{generation}";
+            Directory.CreateDirectory(path);
+            population[i].Save(path + "/{i}.json");
+            File.Copy(path + "/{i}.json", $"../Checkers/Assets/networks/{i}.json", true);
         }
     }
 
