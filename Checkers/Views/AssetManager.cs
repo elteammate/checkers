@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Text;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Checkers.Logic.AI;
 
 namespace Checkers.Views;
 
@@ -22,6 +24,17 @@ public static class AssetManager
     public static readonly Lazy<Bitmap> BlackKing = LazyLoadBitmap("black-king.png");
 
     public static readonly Lazy<Bitmap> BoardBg = LazyLoadBitmap("wood-texture.jpg");
+
+    public static readonly Lazy<NeuralNetwork[]> NeuralNetworks = new(() =>
+    {
+        const int count = 30;
+        var neuralNetworks = new NeuralNetwork[count];
+
+        for (var id = 0; id < count; id++)
+            neuralNetworks[id] = NeuralNetwork.Load($"Assets/networks/{id}.json");
+
+        return neuralNetworks;
+    });
 
     private static Stream Get(string name)
     {

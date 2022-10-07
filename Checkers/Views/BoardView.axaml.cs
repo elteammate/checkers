@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Checkers.Logic;
 using Checkers.Logic.AI;
+using DynamicData.Kernel;
 
 namespace Checkers.Views;
 
@@ -227,16 +228,16 @@ public partial class BoardView : UserControl
         var pos = tile.Position;
 
         if (Game.CurrentPlayer == Game.Board[pos.Index].GetColor() &&
-            Game.MoveFinder.GetMoves().FirstOrDefault(move => move.From == pos) != null)
+            Game.MoveFinder.GetMoves().FirstOrOptional(move => move.From == pos).HasValue)
         {
             SelectedTile = tile;
         }
         else if (SelectedTile != null)
         {
-            var move = Game.MoveFinder.GetMoves().FirstOrDefault(
-                move => move.From == SelectedTile.Position! && move.To == pos);
+            var move = Game.MoveFinder.GetMoves().FirstOrOptional(
+                move => move.From == SelectedTile.Position && move.To == pos);
 
-            if (move != null) Game.MakeMove(move);
+            if (move.HasValue) Game.MakeMove(move.Value);
         }
     }
 
@@ -274,7 +275,9 @@ public partial class BoardView : UserControl
 
         Task.Run(() =>
         {
-            var solver = new Solver(_game, _network.GetEvaluator());
+            var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
+            var network = AssetManager.NeuralNetworks.Value[networkId];
+            var solver = new Solver(_game, network.GetEvaluator());
             var move = solver.FindBestMove();
             Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
         });

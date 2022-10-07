@@ -86,7 +86,9 @@ public class Game
         MoveMade(this, move);
         TryPromote(move.To);
 
-        var currentPlayerMoveFinder = new MoveFinder(CurrentPlayer, _board, move.To);
+        var currentPlayerMoveFinder =
+            new MoveFinder(CurrentPlayer, _board, move.Jumped != null ? move.To : null);
+
         if (move.Jumped != null && currentPlayerMoveFinder.GetForcedMoves().Count > 0)
         {
             MoveFinder = currentPlayerMoveFinder;
