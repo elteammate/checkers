@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -9,7 +8,7 @@ using Checkers.Logic.AI;
 namespace Checkers.Views;
 
 /// <summary>
-/// A helper class for loading images and other assets from the resources.
+///     A helper class for loading images and other assets from the resources.
 /// </summary>
 public static class AssetManager
 {

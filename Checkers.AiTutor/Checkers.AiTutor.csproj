@@ -8,11 +8,31 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Checkers\Checkers.csproj" />
+        <ProjectReference Include="..\Checkers\Checkers.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ShellProgressBar" Version="5.2.0" />
+        <PackageReference Include="ShellProgressBar" Version="5.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaXaml Remove="data\current\**"/>
+        <AvaloniaXaml Remove="data\history\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="data\current\**"/>
+        <Compile Remove="data\history\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="data\current\**"/>
+        <EmbeddedResource Remove="data\history\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="data\current\**"/>
+        <None Remove="data\history\**"/>
     </ItemGroup>
 
 </Project>

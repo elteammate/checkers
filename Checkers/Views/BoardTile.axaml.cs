@@ -8,8 +8,8 @@ using Color = Checkers.Logic.Color;
 namespace Checkers.Views;
 
 /// <summary>
-/// Represents a single square on the board.
-/// This control is not used to handle user input.
+///     Represents a single square on the board.
+///     This control is not used to handle user input.
 /// </summary>
 public partial class BoardTile : UserControl
 {

@@ -14,12 +14,16 @@ public class MoveFinder
 {
     private readonly Color _currentPlayer;
 
+    private readonly Position? _forcedChainPiece;
+
     /// <summary>
     ///     Stores the relative board state.
     /// </summary>
     public readonly RelativePiece[] RelativeBoard;
 
-    private readonly Position? _forcedChainPiece;
+    private List<Move>? _forcedMovesCache;
+
+    private List<Move>? _movesCache;
 
     public MoveFinder(Color currentPlayer, Piece[] board, Position? forcedChainPiece = null)
     {
@@ -237,9 +241,6 @@ public class MoveFinder
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-    private List<Move>? _movesCache;
-    private List<Move>? _forcedMovesCache;
 
     /// <summary>
     ///     Returns a list of all available moves.

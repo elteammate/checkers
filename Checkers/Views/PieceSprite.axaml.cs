@@ -1,5 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Checkers.Logic;
@@ -7,9 +6,9 @@ using Checkers.Logic;
 namespace Checkers.Views;
 
 /// <summary>
-/// This control represents the piece on the board.
-/// It does not handle any logic.
-/// This sprite should be placed on a canvas.
+///     This control represents the piece on the board.
+///     It does not handle any logic.
+///     This sprite should be placed on a canvas.
 /// </summary>
 public partial class PieceSprite : UserControl
 {
@@ -25,8 +24,8 @@ public partial class PieceSprite : UserControl
     }
 
     /// <summary>
-    /// A piece that this sprite represents.
-    /// Updates the sprite when the piece changes.
+    ///     A piece that this sprite represents.
+    ///     Updates the sprite when the piece changes.
     /// </summary>
     public Piece Piece
     {
@@ -48,8 +47,8 @@ public partial class PieceSprite : UserControl
     }
 
     /// <summary>
-    /// The position of the piece on the board.
-    /// When set, the sprite is moved to the correct position.
+    ///     The position of the piece on the board.
+    ///     When set, the sprite is moved to the correct position.
     /// </summary>
     public Position Position
     {

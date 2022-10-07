@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -15,19 +14,41 @@ namespace Checkers.Views;
 
 public partial class BoardView : UserControl
 {
+    private static NeuralNetwork _network = new();
     private readonly Image _boardBackground;
     private readonly Canvas _boardCanvas;
     private readonly Grid _boardGrid;
     private readonly Grid _boardOverlayGrid;
     private readonly Panel _logPanel;
+
+    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
     private readonly double _tileSize;
 
     private Game _game = null!;
 
+    private TileControl? _selectedTile;
+
     private bool _whiteIsAi, _blackIsAi;
 
+    public BoardView()
+    {
+        AvaloniaXamlLoader.Load(this);
+
+        _boardGrid = this.FindControl<Grid>(nameof(BoardGrid))!;
+        _boardCanvas = this.FindControl<Canvas>(nameof(BoardCanvas))!;
+        _boardOverlayGrid = this.FindControl<Grid>(nameof(BoardOverlayGrid))!;
+        _boardBackground = this.FindControl<Image>(nameof(BoardBackground))!;
+        _logPanel = this.FindControl<StackPanel>(nameof(LogPanel))!;
+
+        _tileSize = _boardGrid.Width / Game.BoardWidth;
+
+        InitializeBoard();
+
+        Game = GameFactory.Create();
+    }
+
     /// <summary>
-    /// A game being played on the board.
+    ///     A game being played on the board.
     /// </summary>
     private Game Game
     {
@@ -50,12 +71,8 @@ public partial class BoardView : UserControl
         }
     }
 
-    private readonly Dictionary<Position, PieceSprite> _pieceSprites = new();
-
-    private TileControl? _selectedTile;
-
     /// <summary>
-    /// A tile that is currently selected by player.
+    ///     A tile that is currently selected by player.
     /// </summary>
     private TileControl? SelectedTile
     {
@@ -68,31 +85,14 @@ public partial class BoardView : UserControl
         }
     }
 
-    public BoardView()
-    {
-        AvaloniaXamlLoader.Load(this);
-
-        _boardGrid = this.FindControl<Grid>(nameof(BoardGrid))!;
-        _boardCanvas = this.FindControl<Canvas>(nameof(BoardCanvas))!;
-        _boardOverlayGrid = this.FindControl<Grid>(nameof(BoardOverlayGrid))!;
-        _boardBackground = this.FindControl<Image>(nameof(BoardBackground))!;
-        _logPanel = this.FindControl<StackPanel>(nameof(LogPanel))!;
-
-        _tileSize = _boardGrid.Width / Game.BoardWidth;
-
-        InitializeBoard();
-
-        Game = GameFactory.Create();
-    }
-
     /// <summary>
-    /// Adds an entry to the log
+    ///     Adds an entry to the log
     /// </summary>
     private void Log(string message) =>
         _logPanel.Children.Add(new TextBlock { Text = message });
 
     /// <summary>
-    /// Fills the board with tiles, sets up the background 
+    ///     Fills the board with tiles, sets up the background
     /// </summary>
     private void InitializeBoard()
     {
@@ -148,18 +148,20 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Removes all pieces from the board and adds them back in their initial positions.
+    ///     Removes all pieces from the board and adds them back in their initial positions.
     /// </summary>
     private void InitializePieces()
     {
         _pieceSprites.Clear();
         _boardCanvas.Children.Clear();
 
-        foreach (var pieceOnBoard in Game.PieceMapping.Value)
+        for (var index = 0; index < Game.PlayableTiles; index++)
         {
+            if (Game.Board[index] == Piece.Empty) continue;
+
             var pieceSprite = new PieceSprite { TileSize = _tileSize };
-            var position = pieceOnBoard.Key;
-            var pieceType = pieceOnBoard.Value;
+            var position = new Position(index);
+            var pieceType = Game.Board[index];
 
             pieceSprite.Piece = pieceType;
             pieceSprite.Position = position;
@@ -172,7 +174,7 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Given a move, applies it to the board and animates the piece sprite
+    ///     Given a move, applies it to the board and animates the piece sprite
     /// </summary>
     private void MovePieceSprites(Move move)
     {
@@ -189,7 +191,7 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Updates the sprite of a piece that was promoted
+    ///     Updates the sprite of a piece that was promoted
     /// </summary>
     private void UpdatePromotedSprite(Position pos)
     {
@@ -201,7 +203,7 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Removes a captured piece from the board
+    ///     Removes a captured piece from the board
     /// </summary>
     private void RemoveCapturedPiece(Position pos)
     {
@@ -215,23 +217,19 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Called when player clicks a tile
+    ///     Called when player clicks a tile
     /// </summary>
     public void OnTilePressed(TileControl tile)
     {
-        if (_game.CurrentPlayer == Color.Black && _blackIsAi ||
-            _game.CurrentPlayer == Color.White && _whiteIsAi)
-        {
+        if ((_game.CurrentPlayer == Color.Black && _blackIsAi) ||
+            (_game.CurrentPlayer == Color.White && _whiteIsAi))
             return;
-        }
 
         var pos = tile.Position;
 
         if (Game.CurrentPlayer == Game.Board[pos.Index].GetColor() &&
             Game.MoveFinder.GetMoves().FirstOrOptional(move => move.From == pos).HasValue)
-        {
             SelectedTile = tile;
-        }
         else if (SelectedTile != null)
         {
             var move = Game.MoveFinder.GetMoves().FirstOrOptional(
@@ -242,7 +240,7 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Called when the game is finished
+    ///     Called when the game is finished
     /// </summary>
     private void EndGame(Game.GameResult result)
     {
@@ -257,7 +255,7 @@ public partial class BoardView : UserControl
     }
 
     /// <summary>
-    /// Restarts the game
+    ///     Restarts the game
     /// </summary>
     private void NewGame(bool isWhiteAi, bool isBlackAi)
     {
@@ -265,8 +263,6 @@ public partial class BoardView : UserControl
         _blackIsAi = isBlackAi;
         Game = GameFactory.Create();
     }
-
-    private static NeuralNetwork _network = new();
 
     private void MakeAiMoveIfNeeded()
     {

@@ -6,8 +6,8 @@ using Checkers.Logic;
 namespace Checkers.Views;
 
 /// <summary>
-/// This control is used to highlight squares and take user input.
-/// Is is placed on top of the board and is semi-transparent.
+///     This control is used to highlight squares and take user input.
+///     Is is placed on top of the board and is semi-transparent.
 /// </summary>
 public partial class TileControl : UserControl
 {
@@ -27,17 +27,17 @@ public partial class TileControl : UserControl
     }
 
     /// <summary>
-    /// The position of the tile on the board. Should not be null.
+    ///     The position of the tile on the board. Should not be null.
     /// </summary>
     public Position Position { get; init; }
 
     /// <summary>
-    /// A reference to the board. Used to call the OnTilePressed method.
+    ///     A reference to the board. Used to call the OnTilePressed method.
     /// </summary>
     public BoardView Board { get; init; } = null!;
 
     /// <summary>
-    /// Marks if the tile is selected, updates the tile on change.
+    ///     Marks if the tile is selected, updates the tile on change.
     /// </summary>
     public bool IsSelected
     {

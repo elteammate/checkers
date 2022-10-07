@@ -2,6 +2,9 @@ using System;
 
 namespace Checkers.Logic;
 
+/// <summary>
+///     Enum representing the color of a piece or a player.
+/// </summary>
 public enum Color : sbyte
 {
     White = 1,
@@ -51,7 +54,6 @@ public static class PieceExtensions
     public static RelativePiece ToRelative(this Piece piece, Color color)
     {
         if (color == Color.White)
-        {
             return piece switch
             {
                 Piece.Empty => RelativePiece.Empty,
@@ -61,7 +63,6 @@ public static class PieceExtensions
                 Piece.BlackKing => RelativePiece.EnemyKing,
                 _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
             };
-        }
 
         return piece switch
         {
@@ -89,7 +90,6 @@ public static class RelativePieceExtensions
     public static Piece ToAbsolute(this RelativePiece piece, Color color)
     {
         if (color == Color.White)
-        {
             return piece switch
             {
                 RelativePiece.Empty => Piece.Empty,
@@ -99,7 +99,6 @@ public static class RelativePieceExtensions
                 RelativePiece.EnemyKing => Piece.BlackKing,
                 _ => throw new ArgumentOutOfRangeException(nameof(piece), piece, null)
             };
-        }
 
         return piece switch
         {

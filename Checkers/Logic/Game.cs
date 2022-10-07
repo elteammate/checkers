@@ -18,10 +18,6 @@ public class Game
     public const int PlayableTiles = BoardHeight * BoardWidth / 2;
 
     private readonly Piece[] _board;
-    public IReadOnlyList<Piece> Board => _board;
-    public readonly Cached<IReadOnlyDictionary<Position, Piece>> PieceMapping;
-
-    public MoveFinder MoveFinder { get; private set; }
 
     public Game(Piece[] initialBoard, Color firstPlayer)
     {
@@ -31,17 +27,11 @@ public class Game
         CurrentPlayer = firstPlayer;
         _board = initialBoard;
         MoveFinder = new MoveFinder(CurrentPlayer, initialBoard);
-
-        PieceMapping = new Cached<IReadOnlyDictionary<Position, Piece>>(() =>
-        {
-            var mapping = new Dictionary<Position, Piece>();
-            for (var i = 0; i < PlayableTiles; i++)
-                if (_board[i] != Piece.Empty)
-                    mapping.Add(new Position(i), _board[i]);
-
-            return mapping;
-        });
     }
+
+    public IReadOnlyList<Piece> Board => _board;
+
+    public MoveFinder MoveFinder { get; private set; }
 
     public Color CurrentPlayer { get; private set; }
 

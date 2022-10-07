@@ -1,24 +1,25 @@
-﻿using System.Collections.Concurrent;
-using Checkers.Logic;
+﻿using Checkers.Logic;
 using Checkers.Logic.AI;
 using ShellProgressBar;
 
 namespace Checkers.Tutor;
 
+/// <summary>
+///     The evolution algorithm.
+/// </summary>
 public static class Evolution
 {
     private const int PopulationSize = 30;
     private const int GamesPerIndividual = 10;
 
+    private const string LastGenerationNumberPath = "data/last-generation-number.txt";
+
     public static void Main()
     {
         var population = new List<NeuralNetwork>();
-        for (var i = 0; i < PopulationSize; i++)
-        {
-            population.Add(LoadOrCreate(i));
-        }
+        for (var i = 0; i < PopulationSize; i++) population.Add(LoadOrCreate(i));
 
-        for (var generation = LoadLastGenerationNumber(); generation < 1000; generation++)
+        for (var generation = LoadLastGenerationNumber();; generation++)
         {
             Console.WriteLine($"Generation {generation}");
 
@@ -64,42 +65,40 @@ public static class Evolution
         using (var resetEvent = new ManualResetEvent(false))
         {
             for (var player = 0; player < PopulationSize; player++)
+            for (var gameNumber = 0; gameNumber < GamesPerIndividual; gameNumber++)
             {
-                for (var gameNumber = 0; gameNumber < GamesPerIndividual; gameNumber++)
+                var currentPlayer = player;
+
+                ThreadPool.QueueUserWorkItem(_ =>
                 {
-                    var currentPlayer = player;
+                    var opponent = random.Next(PopulationSize - 1);
+                    if (opponent >= currentPlayer)
+                        opponent++;
 
-                    ThreadPool.QueueUserWorkItem(_ =>
+                    var player1 = population[currentPlayer];
+                    var player2 = population[opponent];
+
+                    var result = Play(player1, player2);
+
+                    lock (score)
                     {
-                        var opponent = random.Next(PopulationSize - 1);
-                        if (opponent >= currentPlayer)
-                            opponent++;
-
-                        var player1 = population[currentPlayer];
-                        var player2 = population[opponent];
-
-                        var result = Play(player1, player2);
-
-                        lock (score)
+                        if (result == Game.GameResult.WhiteWins)
                         {
-                            if (result == Game.GameResult.WhiteWins)
-                            {
-                                score[currentPlayer] += 1;
-                                score[opponent] -= 2;
-                            }
-                            else if (result == Game.GameResult.BlackWins)
-                            {
-                                score[opponent] += 1;
-                                score[currentPlayer] -= 2;
-                            }
-
-                            progressBar.Tick();
+                            score[currentPlayer] += 1;
+                            score[opponent] -= 2;
+                        }
+                        else if (result == Game.GameResult.BlackWins)
+                        {
+                            score[opponent] += 1;
+                            score[currentPlayer] -= 2;
                         }
 
-                        if (Interlocked.Decrement(ref waitingForGames) == 0)
-                            resetEvent.Set();
-                    });
-                }
+                        progressBar.Tick();
+                    }
+
+                    if (Interlocked.Decrement(ref waitingForGames) == 0)
+                        resetEvent.Set();
+                });
             }
 
             resetEvent.WaitOne();
@@ -173,12 +172,8 @@ public static class Evolution
         }
     }
 
-    private static NeuralNetwork LoadFromPopulation(int generation, int id)
-    {
-        return NeuralNetwork.Load($"data/history/gen-{generation}/{id}.json");
-    }
-
-    private const string LastGenerationNumberPath = "data/last-generation-number.txt";
+    private static NeuralNetwork LoadFromPopulation(int generation, int id) =>
+        NeuralNetwork.Load($"data/history/gen-{generation}/{id}.json");
 
     private static int LoadLastGenerationNumber() =>
         int.Parse(File.ReadAllText(LastGenerationNumberPath));

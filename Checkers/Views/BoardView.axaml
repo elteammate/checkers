@@ -43,9 +43,7 @@
                 <StackPanel
                     Orientation="Vertical"
                     HorizontalAlignment="Left"
-                    Name="LogPanel" Margin="0, 50">
-
-                </StackPanel>
+                    Name="LogPanel" Margin="0, 50"/>
             </ScrollViewer>
         </Grid>
     </Grid>
