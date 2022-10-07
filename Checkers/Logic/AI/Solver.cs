@@ -14,7 +14,7 @@ public class Solver
     /// <summary>
     ///     A search depth
     /// </summary>
-    private const int Depth = 6;
+    private readonly int _depth = 6;
 
     /// <summary>
     ///     A heuristic function used to evaluate the board state.
@@ -26,17 +26,18 @@ public class Solver
     /// </summary>
     private readonly GameState _state;
 
-    private Solver(Color player, Piece[] board, HeuristicFunction heuristic)
+    private Solver(Color player, Piece[] board, HeuristicFunction heuristic, int depth)
     {
         _state = new GameState { Player = player, Board = board };
         _heuristic = heuristic;
+        _depth = depth;
     }
 
     /// <summary>
     ///     Creates a new instance of the solver with a given heuristic function.
     /// </summary>
-    public Solver(Game game, HeuristicFunction heuristic) :
-        this(game.CurrentPlayer, game.Board.ToArray(), heuristic)
+    public Solver(Game game, HeuristicFunction heuristic, int depth) :
+        this(game.CurrentPlayer, game.Board.ToArray(), heuristic, depth)
     { }
 
     /// <summary>
@@ -97,7 +98,7 @@ public class Solver
             return bestScore;
         }
 
-        Minimax(Depth, _state, double.MinValue, double.MaxValue, out var foundMove);
+        Minimax(_depth, _state, double.MinValue, double.MaxValue, out var foundMove);
         return (Move)foundMove!;
     }
 

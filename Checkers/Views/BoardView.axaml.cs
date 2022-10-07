@@ -272,7 +272,7 @@ public partial class BoardView : UserControl
         {
             var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
             var network = AssetManager.NeuralNetworks.Value[networkId];
-            var solver = new Solver(_game, network.GetEvaluator());
+            var solver = new Solver(_game, network.GetEvaluator(), 7);
             var move = solver.FindBestMove();
             Dispatcher.UIThread.InvokeAsync(() => { _game.MakeMove(move); });
         });

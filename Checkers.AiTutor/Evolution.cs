@@ -135,7 +135,7 @@ public static class Evolution
         while (game.Result == Game.GameResult.None && moveCount < 100)
         {
             var heuristic = game.CurrentPlayer == Color.White ? white : black;
-            var move = new Solver(game, heuristic.GetEvaluator()).FindBestMove();
+            var move = new Solver(game, heuristic.GetEvaluator(), 3).FindBestMove();
 
             game.MakeMove(move);
             moveCount++;
