@@ -7,4 +7,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Checkers\Checkers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ShellProgressBar" Version="5.2.0" />
+    </ItemGroup>
+
 </Project>

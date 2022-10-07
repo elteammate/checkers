@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Json;
+using Jil;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -13,7 +13,7 @@ using Layer = Matrix<double>;
 
 public class NeuralNetwork
 {
-    private static readonly int[] Layers = { 32, 64, 32, 16, 1 };
+    private static readonly int[] Layers = { 32, 39, 15, 1 };
     private static readonly int WightsCount = Layers.Zip(Layers.Skip(1), (a, b) => a * b).Sum();
     private static readonly double Tau = 1 / Math.Sqrt(2 * Math.Sqrt(WightsCount));
 
@@ -48,14 +48,14 @@ public class NeuralNetwork
                 _weights[i].ColumnCount,
                 normal);
 
-            newSigma[i] = _sigma[i] * (random * Tau).PointwiseExp();
+            newSigma[i] = _sigma[i].PointwiseMultiply((random * Tau).PointwiseExp());
 
             random = DenseMatrix.CreateRandom(
                 _weights[i].RowCount,
                 _weights[i].ColumnCount,
                 normal);
 
-            newWeights[i] = _weights[i] + newSigma[i] * random;
+            newWeights[i] = _weights[i] + newSigma[i].PointwiseMultiply(random);
         }
 
         var newK = _k * Math.Exp(1 / Math.Sqrt(2) * normal.Sample());
@@ -98,9 +98,14 @@ public class NeuralNetwork
 
     public record NeuralNetworkData
     {
-        private double K { get; init; } = 2;
-        private double[][][] Weights { get; init; } = null!;
-        private double[][][] Sigma { get; init; } = null!;
+        // ReSharper disable once MemberCanBePrivate.Global
+        public double K = 2;
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public double[][][] Weights = null!;
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public double[][][] Sigma = null!;
 
         public NeuralNetwork Load()
         {
@@ -124,8 +129,8 @@ public class NeuralNetwork
     }
 
     public void Save(string path) =>
-        File.WriteAllText(path, JsonParser.Serialize(NeuralNetworkData.From(this)));
+        File.WriteAllText(path, JSON.Serialize(NeuralNetworkData.From(this)));
 
-    public void Load(string path) =>
-        JsonParser.Deserialize<NeuralNetworkData>(File.ReadAllText(path)).Load();
+    public static NeuralNetwork Load(string path) =>
+        JSON.Deserialize<NeuralNetworkData>(File.ReadAllText(path)).Load();
 }

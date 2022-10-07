@@ -8,7 +8,7 @@ using HeuristicFunction = Func<Piece[], double>;
 
 public class Solver
 {
-    private const int Depth = 8;
+    private const int Depth = 3;
     private readonly HeuristicFunction _heuristic;
     private readonly GameState _state;
 
@@ -82,7 +82,9 @@ public class Solver
             foreach (var move in moves)
             {
                 var newState = state.MakeMove(move);
-                var score = Minimax(depthLeft - 1, newState, alpha, beta, out _);
+                var score = Minimax(
+                    depthLeft - (move.Jumped == null ? 1 : 0), 
+                    newState, alpha, beta, out _);
 
                 if (state.Player == Color.White)
                 {
