@@ -21,7 +21,7 @@ public class NeuralNetwork
     ///     A number of neurons in each layer.
     ///     Similar to the article, but slightly different for better performance on modern hardware.
     /// </summary>
-    private static readonly int[] Layers = { 32, 39, 15, 1 };
+    private static readonly int[] Layers = { 32, 60, 10, 1 };
 
     /// <summary>
     ///     A total count of weights in the network.
@@ -31,9 +31,8 @@ public class NeuralNetwork
 
     /// <summary>
     ///     Constant used to normalize the mutation rate.
-    ///     Equals to the inverse of expected magnitude of the sigma mutation vector.
     /// </summary>
-    private static readonly double Tau = 1 / Math.Sqrt(2 * Math.Sqrt(WightsCount));
+    private const double Tau = 1.0 / 30.0;
 
     /// <summary>
     ///     A value given to the king upon evaluation.
@@ -42,11 +41,6 @@ public class NeuralNetwork
     ///     Clamped between 1.2 and 3.
     /// </summary>
     private double _k = 2;
-
-    /// <summary>
-    ///     Self-adaptive mutation rate for each weight.
-    /// </summary>
-    private Layer[] _sigma;
 
     /// <summary>
     ///     Weights (and biases) of the network.
@@ -59,13 +53,11 @@ public class NeuralNetwork
     public NeuralNetwork()
     {
         _weights = new Layer[Layers.Length - 1];
-        _sigma = new Layer[Layers.Length - 1];
 
         var normal = new Normal(0, 1);
         for (var i = 0; i < Layers.Length - 1; i++)
         {
-            _weights[i] = DenseMatrix.CreateRandom(Layers[i + 1], Layers[i] + 1, normal);
-            _sigma[i] = DenseMatrix.Create(Layers[i + 1], Layers[i] + 1, 0.05);
+            _weights[i] = DenseMatrix.CreateRandom(Layers[i] + 1, Layers[i + 1], normal);
         }
     }
 
@@ -74,7 +66,6 @@ public class NeuralNetwork
     /// </summary>
     public NeuralNetwork Mutate()
     {
-        var newSigma = new Layer[_sigma.Length];
         var newWeights = new Layer[_weights.Length];
 
         var normal = new Normal(0, 1);
@@ -86,14 +77,7 @@ public class NeuralNetwork
                 _weights[i].ColumnCount,
                 normal);
 
-            newSigma[i] = _sigma[i].PointwiseMultiply((random * Tau).PointwiseExp());
-
-            random = DenseMatrix.CreateRandom(
-                _weights[i].RowCount,
-                _weights[i].ColumnCount,
-                normal);
-
-            newWeights[i] = _weights[i] + newSigma[i].PointwiseMultiply(random);
+            newWeights[i] = _weights[i] + random * Tau;
         }
 
         var newK = _k * Math.Exp(1 / Math.Sqrt(2) * normal.Sample());
@@ -102,7 +86,6 @@ public class NeuralNetwork
 
         return new NeuralNetwork
         {
-            _sigma = newSigma,
             _weights = newWeights,
             _k = newK
         };
@@ -128,19 +111,16 @@ public class NeuralNetwork
             var nn = population[populationIndex];
             newPopulation[populationIndex] = population[populationIndex];
 
-            var newSigma = new Layer[nn._sigma.Length];
             var newWeights = new Layer[nn._weights.Length];
 
             for (var i = 0; i < nn._weights.Length; i++)
             {
-                newSigma[i] = nn._sigma[i].PointwiseMultiply((sigmaRandom[i] * Tau).PointwiseExp());
-
-                var weightRandom = DenseMatrix.CreateRandom(
+                var random = DenseMatrix.CreateRandom(
                     nn._weights[i].RowCount,
                     nn._weights[i].ColumnCount,
                     normal);
 
-                newWeights[i] = nn._weights[i] + newSigma[i].PointwiseMultiply(weightRandom);
+                newWeights[i] = nn._weights[i] + random * Tau;
             }
 
             var newK = nn._k * Math.Exp(1 / Math.Sqrt(2) * normal.Sample());
@@ -149,7 +129,6 @@ public class NeuralNetwork
 
             newPopulation[populationIndex + population.Length] = new NeuralNetwork
             {
-                _sigma = newSigma,
                 _weights = newWeights,
                 _k = newK
             };
@@ -162,12 +141,10 @@ public class NeuralNetwork
     {
         var random = new Random();
         var newK = random.Next(2) == 0 ? nn1._k : nn2._k;
-        var newSigma = new Layer[nn1._sigma.Length];
         var newWeights = new Layer[nn1._weights.Length];
 
         for (var i = 0; i < nn1._weights.Length; i++)
         {
-            newSigma[i] = nn1._sigma[i];
             newWeights[i] = nn1._weights[i];
             for (var j = 0; j < nn1._weights[i].RowCount; j++)
             {
@@ -175,12 +152,10 @@ public class NeuralNetwork
                 {
                     if (random.Next(2) == 0)
                     {
-                        newSigma[i][j, k] = nn1._sigma[i][j, k];
                         newWeights[i][j, k] = nn1._weights[i][j, k];
                     }
                     else
                     {
-                        newSigma[i][j, k] = nn2._sigma[i][j, k];
                         newWeights[i][j, k] = nn2._weights[i][j, k];
                     }
                 }
@@ -189,7 +164,6 @@ public class NeuralNetwork
 
         return new NeuralNetwork
         {
-            _sigma = newSigma,
             _weights = newWeights,
             _k = newK
         };
@@ -204,7 +178,7 @@ public class NeuralNetwork
 
         foreach (var layer in _weights)
         {
-            output = layer * new DenseVector(output.Append(1).ToArray());
+            output = layer.TransposeThisAndMultiply(new DenseVector(output.Append(1).ToArray()));
             output = output.PointwiseTanh();
         }
 
@@ -251,9 +225,6 @@ public class NeuralNetwork
         public double K = 2;
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public double[][][] Sigma = null!;
-
-        // ReSharper disable once MemberCanBePrivate.Global
         public double[][][] Weights = null!;
 
         /// <summary>
@@ -265,7 +236,6 @@ public class NeuralNetwork
             {
                 _k = K,
                 _weights = Weights.Select(m => (Layer)DenseMatrix.OfRowArrays(m)).ToArray(),
-                _sigma = Sigma.Select(m => (Layer)DenseMatrix.OfRowArrays(m)).ToArray()
             };
         }
 
@@ -278,7 +248,6 @@ public class NeuralNetwork
             {
                 K = network._k,
                 Weights = network._weights.Select(x => x.ToRowArrays()).ToArray(),
-                Sigma = network._sigma.Select(x => x.ToRowArrays()).ToArray()
             };
         }
     }
