@@ -17,6 +17,7 @@ public static class Evolution
 
     public static void Main()
     {
+        Console.WriteLine(Directory.GetCurrentDirectory());
         var population = new List<NeuralNetwork>();
         for (var i = 0; i < PopulationSize; i++) population.Add(LoadOrCreate(i));
 
