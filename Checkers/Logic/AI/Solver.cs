@@ -126,6 +126,9 @@ public class Solver
             try
             {
                 var move = solver8.FindBestMove();
+                if (DateTime.Now - timeStart < TimeSpan.FromMilliseconds(500))
+                    Thread.Sleep(500);
+
                 lock (callbackLock)
                 {
                     if (callbackInvoked) return;
