@@ -270,27 +270,16 @@ public partial class BoardView : UserControl
               (_game.CurrentPlayer == Color.Black && _blackIsAi))) return;
 
         var game = _game;
-        Task.Run(() =>
-        {
-            const int minDelayMs = 200;
-            var timeStart = DateTime.Now;
-            var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
-            var network = AssetManager.NeuralNetworks.Value[networkId];
-            var solver = new Solver(game, network.GetEvaluator(), 5);
-            var move = solver.FindBestMove();
-            if ((DateTime.Now - timeStart).Milliseconds < minDelayMs)
-            {
-                Thread.Sleep(timeStart + TimeSpan.FromMilliseconds(minDelayMs) - DateTime.Now);
-            }
+        var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
+        var network = AssetManager.NeuralNetworks.Value[networkId];
 
-            Dispatcher.UIThread.InvokeAsync(() =>
+        Solver.FindBestMoveAsyncAdaptive(move => Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (game == _game)
             {
-                if (game == _game)
-                {
-                    game.MakeMove(move);
-                }
-            });
-        });
+                game.MakeMove(move);
+            }
+        }), game, network.GetEvaluator());
     }
 
     private void NewGamePlayerVsPlayer_OnClick(object sender, RoutedEventArgs e) =>

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Checkers.Logic.AI;
 
@@ -100,6 +103,82 @@ public class Solver
 
         Minimax(_depth, _state, double.MinValue, double.MaxValue, out var foundMove);
         return (Move)foundMove!;
+    }
+
+    /// <summary>
+    ///     Asynchronously runs the solver and returns the best move.
+    ///     If searching for the move takes too long, method fallbacks
+    ///     to a faster searcher with lower depth.
+    /// </summary>
+    public static void FindBestMoveAsyncAdaptive(Action<Move> callback, Game game,
+        HeuristicFunction heuristic)
+    {
+        var timeStart = DateTime.Now;
+        var solver4 = new Solver(game, heuristic, 4);
+        var solver6 = new Solver(game, heuristic, 6);
+        var solver8 = new Solver(game, heuristic, 8);
+
+        var callbackLock = new object();
+        var callbackInvoked = false;
+
+        var task8 = new Thread(() =>
+        {
+            try
+            {
+                var move = solver8.FindBestMove();
+                lock (callbackLock)
+                {
+                    if (callbackInvoked) return;
+                    callback(move);
+                    callbackInvoked = true;
+                    Console.WriteLine($"Made move of depth 8 after {DateTime.Now - timeStart}");
+                }
+            }
+            catch (ThreadInterruptedException)
+            { }
+            catch (AggregateException)
+            { }
+        });
+
+        var task6 = new Thread(() =>
+        {
+            try
+            {
+                var move = solver6.FindBestMove();
+                Thread.Sleep(3000);
+                lock (callbackLock)
+                {
+                    if (callbackInvoked) return;
+                    callback(move);
+                    callbackInvoked = true;
+                    task8.Interrupt();
+                    Console.WriteLine($"Made move of depth 6 after {DateTime.Now - timeStart}");
+                }
+            }
+            catch (ThreadInterruptedException)
+            { }
+            catch (AggregateException)
+            { }
+        });
+
+        var task4 = new Thread(() =>
+        {
+            var move = solver4.FindBestMove();
+            Thread.Sleep(6000);
+            lock (callbackLock)
+            {
+                if (callbackInvoked) return;
+                callback(move);
+                callbackInvoked = true;
+                task8.Interrupt();
+                task6.Interrupt();
+                Console.WriteLine($"Made move of depth 4 after {DateTime.Now - timeStart}");
+            }
+        });
+
+        task8.Start();
+        task6.Start();
+        task4.Start();
     }
 
     /// <summary>
