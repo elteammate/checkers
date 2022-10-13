@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -271,10 +272,17 @@ public partial class BoardView : UserControl
         var game = _game;
         Task.Run(() =>
         {
+            const int minDelayMs = 200;
+            var timeStart = DateTime.Now;
             var networkId = new Random().Next(AssetManager.NeuralNetworks.Value.Length);
             var network = AssetManager.NeuralNetworks.Value[networkId];
             var solver = new Solver(game, network.GetEvaluator(), 5);
             var move = solver.FindBestMove();
+            if ((DateTime.Now - timeStart).Milliseconds < minDelayMs)
+            {
+                Thread.Sleep(timeStart + TimeSpan.FromMilliseconds(minDelayMs) - DateTime.Now);
+            }
+
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (game == _game)
