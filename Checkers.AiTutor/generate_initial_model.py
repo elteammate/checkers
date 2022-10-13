@@ -41,5 +41,5 @@ json_model = {
 
 json.dump(json_model, open("data/model.json", "w"))
 
-for i in range(30):
+for i in range(300):
     json.dump(json_model, open(f"data/current/{i}.json", "w"))

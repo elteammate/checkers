@@ -24,15 +24,9 @@ public class NeuralNetwork
     private static readonly int[] Layers = { 32, 60, 10, 1 };
 
     /// <summary>
-    ///     A total count of weights in the network.
-    /// </summary>
-    private static readonly int WightsCount =
-        Layers.Zip(Layers.Skip(1), (a, b) => a * (b + 1)).Sum();
-
-    /// <summary>
     ///     Constant used to normalize the mutation rate.
     /// </summary>
-    private const double Tau = 1.0 / 30.0;
+    private const double Tau = 1.0 / 100.0;
 
     /// <summary>
     ///     A value given to the king upon evaluation.

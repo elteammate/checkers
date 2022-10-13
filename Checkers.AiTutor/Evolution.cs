@@ -9,9 +9,9 @@ namespace Checkers.Tutor;
 /// </summary>
 public static class Evolution
 {
-    private const int PopulationSize = 30;
-    private const int GamesPerIndividual = 10;
-    private const int ReinforcementGamesPerIndividual = 4;
+    private const int PopulationSize = 300;
+    private const int GamesPerIndividual = 8;
+    private const int ReinforcementGamesPerIndividual = 10;
 
     private const string LastGenerationNumberPath = "data/last-generation-number.txt";
 
@@ -145,7 +145,7 @@ public static class Evolution
             newGen.Add(NeuralNetwork.Crossover(parent1, parent2));
         }
 
-        for (var mutation = 0; mutation < 10; mutation++)
+        for (var mutation = 0; mutation < 50; mutation++)
         {
             var index = random.Next(PopulationSize);
             newGen[index] = newGen[index].Mutate();
@@ -169,7 +169,7 @@ public static class Evolution
         throw new Exception("Should not happen");
     }
 
-    private static Game.GameResult Play(
+    public static Game.GameResult Play(
         NeuralNetwork white,
         NeuralNetwork black
     )
@@ -180,7 +180,7 @@ public static class Evolution
         while (game.Result == Game.GameResult.None && moveCount < 100)
         {
             var heuristic = game.CurrentPlayer == Color.White ? white : black;
-            var move = new Solver(game, heuristic.GetEvaluator(), 4).FindBestMove();
+            var move = new Solver(game, heuristic.GetEvaluator(), 3).FindBestMove();
 
             game.MakeMove(move);
             moveCount++;
