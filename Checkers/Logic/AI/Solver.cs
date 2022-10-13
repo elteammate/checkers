@@ -148,7 +148,7 @@ public class Solver
             try
             {
                 var move = solver6.FindBestMove();
-                Thread.Sleep(3000);
+                Thread.Sleep(2500);
                 lock (callbackLock)
                 {
                     if (callbackInvoked) return;
@@ -167,7 +167,7 @@ public class Solver
         var task4 = new Thread(() =>
         {
             var move = solver4.FindBestMove();
-            Thread.Sleep(6000);
+            Thread.Sleep(3000);
             lock (callbackLock)
             {
                 if (callbackInvoked) return;
