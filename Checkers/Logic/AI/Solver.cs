@@ -101,6 +101,12 @@ public class Solver
             return bestScore;
         }
 
+        if (_state.GetMoves().Count == 0)
+            throw new InvalidOperationException("No moves available.");
+
+        if (_state.GetMoves().Count == 1)
+            return _state.GetMoves().First();
+
         Minimax(_depth, _state, double.MinValue, double.MaxValue, out var foundMove);
         return (Move)foundMove!;
     }
