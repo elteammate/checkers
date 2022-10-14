@@ -136,10 +136,7 @@ public static class Evolution
             .Take(PopulationSize / 2)
             .ToArray();
 
-        for (var i = 0; i < PopulationSize / 2; i++)
-        {
-            bestHalf[i].s -= bestHalf[^1].s;
-        }
+        for (var i = 0; i < PopulationSize / 2; i++) bestHalf[i].s -= bestHalf[^1].s;
 
         var newGen = bestHalf.Select(x => x.network).ToList();
         for (var i = 0; i < PopulationSize / 2; i++)

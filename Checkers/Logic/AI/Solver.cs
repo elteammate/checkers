@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Checkers.Logic.AI;
 
@@ -14,6 +12,10 @@ using HeuristicFunction = Func<Piece[], double>;
 /// </summary>
 public class Solver
 {
+    private const int Depth6SearchTimeMs = 2500;
+    private const int Depth4SearchTimeMs = 3000;
+    private const int MinimumSearchTimeMs = 500;
+
     /// <summary>
     ///     A search depth
     /// </summary>
@@ -110,10 +112,6 @@ public class Solver
         Minimax(_depth, _state, double.MinValue, double.MaxValue, out var foundMove);
         return (Move)foundMove!;
     }
-
-    private const int Depth6SearchTimeMs = 2500;
-    private const int Depth4SearchTimeMs = 3000;
-    private const int MinimumSearchTimeMs = 500;
 
     /// <summary>
     ///     Asynchronously runs the solver and returns the best move.

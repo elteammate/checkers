@@ -24,13 +24,13 @@ public class Game
     public const int PlayableTiles = BoardHeight * BoardWidth / 2;
 
     /// <summary>
-    /// Mutable board state containing pieces on 32 squares.
+    ///     Mutable board state containing pieces on 32 squares.
     /// </summary>
     private readonly Piece[] _board;
 
     /// <summary>
-    /// Creates a new game of checkers.
-    /// It's more convenient to use the <see cref="GameFactory.Create()"/> method.
+    ///     Creates a new game of checkers.
+    ///     It's more convenient to use the <see cref="GameFactory.Create()" /> method.
     /// </summary>
     public Game(Piece[] initialBoard, Color firstPlayer)
     {
@@ -43,12 +43,12 @@ public class Game
     }
 
     /// <summary>
-    /// Public read-only accessor for the current board state
+    ///     Public read-only accessor for the current board state
     /// </summary>
     public IReadOnlyList<Piece> Board => _board;
 
     /// <summary>
-    /// Immutable object used to find all possible moves for the current player.
+    ///     Immutable object used to find all possible moves for the current player.
     /// </summary>
     public MoveFinder MoveFinder { get; private set; }
 
@@ -58,45 +58,45 @@ public class Game
 
 
     /// <summary>
-    /// This event is raised when the the move is made
-    /// before transitioning to the next player.
+    ///     This event is raised when the the move is made
+    ///     before transitioning to the next player.
     /// </summary>
     public event EventHandler<Move> MoveMade = delegate { };
 
     /// <summary>
-    /// This event is raised when the piece is captured
-    /// before MoveMade event.
+    ///     This event is raised when the piece is captured
+    ///     before MoveMade event.
     /// </summary>
     public event EventHandler<Position> PieceCaptured = delegate { };
 
     /// <summary>
-    /// This event is raised when the piece is promoted
-    /// after MoveMade event.
+    ///     This event is raised when the piece is promoted
+    ///     after MoveMade event.
     /// </summary>
     public event EventHandler<Position> PiecePromoted = delegate { };
 
     /// <summary>
-    /// The event is raised when next move will be made by different player
-    /// after all the board updates
+    ///     The event is raised when next move will be made by different player
+    ///     after all the board updates
     /// </summary>
     public event EventHandler<Color> PlayerTransition = delegate { };
 
     /// <summary>
-    /// This event is raised when the game is over
+    ///     This event is raised when the game is over
     /// </summary>
     public event EventHandler<GameResult> GameEnded = delegate { };
 
     /// <summary>
-    /// This event is raised when the move is finished and all the update events before are raised
-    /// It's guaranteed that the event is raised after all the board updates
-    /// and that it wil not be raised after GameEnded event
+    ///     This event is raised when the move is finished and all the update events before are raised
+    ///     It's guaranteed that the event is raised after all the board updates
+    ///     and that it wil not be raised after GameEnded event
     /// </summary>
     public event EventHandler<Move> MoveFinished = delegate { };
 
 
     /// <summary>
-    /// Tries to promote the piece at the given position.
-    /// Ignores the request if the piece is not promotable.
+    ///     Tries to promote the piece at the given position.
+    ///     Ignores the request if the piece is not promotable.
     /// </summary>
     private void TryPromote(Position pos)
     {
@@ -115,9 +115,9 @@ public class Game
     }
 
     /// <summary>
-    /// Makes a move on the board.
-    /// This method assumes that the move is valid.
-    /// All the move logic is implemented here.
+    ///     Makes a move on the board.
+    ///     This method assumes that the move is valid.
+    ///     All the move logic is implemented here.
     /// </summary>
     public void MakeMove(Move move)
     {

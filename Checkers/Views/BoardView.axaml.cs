@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -275,10 +273,7 @@ public partial class BoardView : UserControl
 
         Solver.FindBestMoveAsyncAdaptive(move => Dispatcher.UIThread.InvokeAsync(() =>
         {
-            if (game == _game)
-            {
-                game.MakeMove(move);
-            }
+            if (game == _game) game.MakeMove(move);
         }), game, network.GetEvaluator());
     }
 

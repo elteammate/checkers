@@ -6,10 +6,7 @@ public class SampleGenerator
 {
     public static void Generate()
     {
-        for (var i = 0; i < 1000; i++)
-        {
-            GenerateOne();
-        }
+        for (var i = 0; i < 1000; i++) GenerateOne();
     }
 
     public static void GenerateOne()

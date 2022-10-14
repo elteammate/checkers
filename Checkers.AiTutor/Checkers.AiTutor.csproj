@@ -8,57 +8,61 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Checkers\Checkers.csproj" />
+        <ProjectReference Include="..\Checkers\Checkers.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ShellProgressBar" Version="5.2.0" />
+        <PackageReference Include="ShellProgressBar" Version="5.2.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaXaml Remove="data\history\**" />
+        <AvaloniaXaml Remove="data\history\**"/>
+        <AvaloniaXaml Remove="data\current\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="data\history\**" />
+        <Compile Remove="data\history\**"/>
+        <Compile Remove="data\current\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="data\history\**" />
+        <EmbeddedResource Remove="data\history\**"/>
+        <EmbeddedResource Remove="data\current\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="data\history\**" />
-        <None Include="data\current\0.json" />
-        <None Include="data\current\1.json" />
-        <None Include="data\current\10.json" />
-        <None Include="data\current\11.json" />
-        <None Include="data\current\12.json" />
-        <None Include="data\current\13.json" />
-        <None Include="data\current\14.json" />
-        <None Include="data\current\15.json" />
-        <None Include="data\current\16.json" />
-        <None Include="data\current\17.json" />
-        <None Include="data\current\18.json" />
-        <None Include="data\current\19.json" />
-        <None Include="data\current\2.json" />
-        <None Include="data\current\20.json" />
-        <None Include="data\current\21.json" />
-        <None Include="data\current\22.json" />
-        <None Include="data\current\23.json" />
-        <None Include="data\current\24.json" />
-        <None Include="data\current\25.json" />
-        <None Include="data\current\26.json" />
-        <None Include="data\current\27.json" />
-        <None Include="data\current\28.json" />
-        <None Include="data\current\29.json" />
-        <None Include="data\current\3.json" />
-        <None Include="data\current\4.json" />
-        <None Include="data\current\5.json" />
-        <None Include="data\current\6.json" />
-        <None Include="data\current\7.json" />
-        <None Include="data\current\8.json" />
-        <None Include="data\current\9.json" />
+        <None Remove="data\history\**"/>
+        <None Include="data\current\0.json"/>
+        <None Include="data\current\1.json"/>
+        <None Include="data\current\10.json"/>
+        <None Include="data\current\11.json"/>
+        <None Include="data\current\12.json"/>
+        <None Include="data\current\13.json"/>
+        <None Include="data\current\14.json"/>
+        <None Include="data\current\15.json"/>
+        <None Include="data\current\16.json"/>
+        <None Include="data\current\17.json"/>
+        <None Include="data\current\18.json"/>
+        <None Include="data\current\19.json"/>
+        <None Include="data\current\2.json"/>
+        <None Include="data\current\20.json"/>
+        <None Include="data\current\21.json"/>
+        <None Include="data\current\22.json"/>
+        <None Include="data\current\23.json"/>
+        <None Include="data\current\24.json"/>
+        <None Include="data\current\25.json"/>
+        <None Include="data\current\26.json"/>
+        <None Include="data\current\27.json"/>
+        <None Include="data\current\28.json"/>
+        <None Include="data\current\29.json"/>
+        <None Include="data\current\3.json"/>
+        <None Include="data\current\4.json"/>
+        <None Include="data\current\5.json"/>
+        <None Include="data\current\6.json"/>
+        <None Include="data\current\7.json"/>
+        <None Include="data\current\8.json"/>
+        <None Include="data\current\9.json"/>
+        <None Remove="data\current\**"/>
     </ItemGroup>
 
 </Project>

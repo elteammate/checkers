@@ -1,7 +1,6 @@
 import json
 
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
 
 inputs = keras.Input(shape=(32,), name="board")
