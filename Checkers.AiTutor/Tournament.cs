@@ -7,7 +7,7 @@ public class Tournament
 {
     public static void Play()
     {
-        var genWhite = 15;
+        var genWhite = 52;
         var genBlack = 0;
 
         var random = new Random();

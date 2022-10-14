@@ -75,6 +75,8 @@ public static class Evolution
                 var currentPlayer = player;
                 var number = gameNumber;
 
+                var fileLock = new object();
+
                 ThreadPool.QueueUserWorkItem(_ =>
                 {
                     NeuralNetwork player1, player2;
@@ -91,9 +93,12 @@ public static class Evolution
                     else
                     {
                         player1 = population[currentPlayer];
-                        player2 = LoadFromPopulation(
-                            random.Next(gen / 2),
-                            random.Next(PopulationSize));
+                        lock (fileLock)
+                        {
+                            player2 = LoadFromPopulation(
+                                random.Next(gen / 2),
+                                random.Next(PopulationSize));
+                        }
                     }
 
                     var result = Play(player1, player2);

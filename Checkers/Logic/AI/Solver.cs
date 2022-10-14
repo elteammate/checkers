@@ -111,6 +111,10 @@ public class Solver
         return (Move)foundMove!;
     }
 
+    private const int Depth6SearchTimeMs = 2500;
+    private const int Depth4SearchTimeMs = 3000;
+    private const int MinimumSearchTimeMs = 500;
+
     /// <summary>
     ///     Asynchronously runs the solver and returns the best move.
     ///     If searching for the move takes too long, method fallbacks
@@ -132,8 +136,8 @@ public class Solver
             try
             {
                 var move = solver8.FindBestMove();
-                if (DateTime.Now - timeStart < TimeSpan.FromMilliseconds(500))
-                    Thread.Sleep(500);
+                if (DateTime.Now - timeStart < TimeSpan.FromMilliseconds(MinimumSearchTimeMs))
+                    Thread.Sleep(MinimumSearchTimeMs);
 
                 lock (callbackLock)
                 {
@@ -154,7 +158,7 @@ public class Solver
             try
             {
                 var move = solver6.FindBestMove();
-                Thread.Sleep(2500);
+                Thread.Sleep(Depth6SearchTimeMs);
                 lock (callbackLock)
                 {
                     if (callbackInvoked) return;
@@ -173,7 +177,7 @@ public class Solver
         var task4 = new Thread(() =>
         {
             var move = solver4.FindBestMove();
-            Thread.Sleep(3000);
+            Thread.Sleep(Depth4SearchTimeMs);
             lock (callbackLock)
             {
                 if (callbackInvoked) return;

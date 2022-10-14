@@ -24,17 +24,17 @@ public readonly struct Position
 {
     public Position(int index)
     {
-        if (index is < 0 or > 31)
+        if (index is < 0 or > Game.PlayableTiles - 1)
             throw new ArgumentOutOfRangeException(nameof(index));
         Index = index;
     }
 
     public Position(int row, int column) : this((7 - row) * 4 + column / 2)
     {
-        if (column is < 0 or > 7)
+        if (column is < 0 or > Game.BoardHeight - 1)
             throw new ArgumentOutOfRangeException(nameof(column));
 
-        if (row is < 0 or > 7)
+        if (row is < 0 or > Game.BoardWidth - 1)
             throw new ArgumentOutOfRangeException(nameof(row));
 
         if ((row + column) % 2 != 0)
